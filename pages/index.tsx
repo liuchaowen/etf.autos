@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Head from 'next/head';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { ChartIcon, ChevronDownIcon } from '@/components/icons';
+import { Header } from '@/components/header';
+import { ChevronDownIcon, ChartIcon } from '@/components/icons';
 import { StrategyParamsSection } from '@/components/strategy-params';
 import { StrategyMetricsSection } from '@/components/strategy-metrics';
 import { TradeTable } from '@/components/trade-table';
 import { ChartSection } from '@/components/chart-section';
+import { FooterDisclaimer } from '@/components/footer-disclaimer';
 import { fetchGridStrategy, fetchFundHistory, ETF_LIST } from '@/lib/api';
 import { StrategyResult, StrategyParams, HistoryItem, ChartDataItem, TradeSignal, FundItem } from '@/types';
 
@@ -22,7 +23,7 @@ export default function GridStrategyPage() {
     initial_capital: 10000,
     grid_width: 0,
     num_grids: 15,
-    shares_per_grid: 500,
+    grid_investment_percent: 5,  // 默认每格投资5%的资金
     use_volatility_adjustment: true,
   });
 
@@ -107,42 +108,27 @@ export default function GridStrategyPage() {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Head>
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-airbnb transition-colors">
+      <div className="min-h-screen bg-white dark:bg-gray-900 font-airbnb transition-colors">
         {/* 顶部导航栏 */}
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex items-center justify-between gap-4">
-              {/* 左侧：标题 */}
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 flex items-center justify-center">
-                  <ChartIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                </div>
-                <div>
-                  <h1 className="text-sm font-medium text-gray-900 dark:text-white">网格交易策略</h1>
-                </div>
-              </div>
-
-              {/* 右侧：ETF选择和主题切换 */}
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <select
-                    value={selectedCode}
-                    onChange={e => setSelectedCode(e.target.value)}
-                    className="appearance-none bg-gray-900 text-white px-3 py-1.5 pr-8 text-xs cursor-pointer focus:outline-none min-w-[140px]"
-                  >
-                    {ETF_LIST.map(etf => (
-                      <option key={etf.fund_code} value={etf.fund_code}>
-                        {etf.abbr} ({etf.fund_code})
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDownIcon className="absolute w-4 h-4 right-2 top-1/2 -translate-y-1/2 text-white pointer-events-none" />
-                </div>
-                <ThemeToggle />
-              </div>
+        <Header
+          activePage="backtest"
+          rightContent={
+            <div className="relative">
+              <select
+                value={selectedCode}
+                onChange={e => setSelectedCode(e.target.value)}
+                className="appearance-none bg-[#222222] text-white px-3 py-1.5 pr-8 text-xs cursor-pointer focus:outline-none min-w-[140px] rounded-[8px]"
+              >
+                {ETF_LIST.map(etf => (
+                  <option key={etf.fund_code} value={etf.fund_code}>
+                    {etf.abbr} ({etf.fund_code})
+                  </option>
+                ))}
+              </select>
+              <ChevronDownIcon className="absolute w-4 h-4 right-2 top-1/2 -translate-y-1/2 text-white pointer-events-none" />
             </div>
-          </div>
-        </header>
+          }
+        />
 
         {/* 主内容区 */}
         <main className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -195,9 +181,7 @@ export default function GridStrategyPage() {
               </section>
 
               {/* 数据来源说明 */}
-              <div className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4">
-                数据来源:天天基金 · 策略回测仅供学习研究，不构成投资建议
-              </div>
+              <FooterDisclaimer />
             </div>
           ) : (
             <div className="text-center py-32">

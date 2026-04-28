@@ -31,12 +31,12 @@ const SLIDER_CONFIG = {
         label: '网格层数',
         format: (v: number) => `${v}层`,
     },
-    shares_per_grid: {
-        min: 100,
-        max: 1000,
-        step: 100,
-        label: '每格股数',
-        format: (v: number) => `${v}股`,
+    grid_investment_percent: {
+        min: 1,     // 1%
+        max: 10,    // 10%
+        step: 1,
+        label: '每格资金占比',
+        format: (v: number) => `${v}%`,
     },
 };
 
@@ -131,7 +131,7 @@ export function StrategyParamsSection({ params, result, onChange }: StrategyPara
                 {renderSlider('initial_capital', SLIDER_CONFIG.initial_capital)}
                 {renderSlider('grid_width', SLIDER_CONFIG.grid_width)}
                 {renderSlider('num_grids', SLIDER_CONFIG.num_grids)}
-                {renderSlider('shares_per_grid', SLIDER_CONFIG.shares_per_grid)}
+                {renderSlider('grid_investment_percent', SLIDER_CONFIG.grid_investment_percent)}
             </div>
         </section>
     );

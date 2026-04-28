@@ -49,7 +49,7 @@ export interface StrategyResult {
     initial_capital: number;
     grid_width: number;
     num_grids: number;
-    shares_per_grid: number;
+    grid_investment_percent: number;  // 每格投资占初始资金的百分比
     use_volatility_adjustment: boolean;
   };
   signals: {
@@ -71,7 +71,7 @@ export interface StrategyParams {
   initial_capital: number;
   grid_width: number;
   num_grids: number;
-  shares_per_grid: number;
+  grid_investment_percent: number;  // 每格投资占初始资金的百分比
   use_volatility_adjustment: boolean;
 }
 

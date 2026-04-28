@@ -63,7 +63,7 @@ export function fetchGridStrategy(
         initial_capital: params.initial_capital || 10000,
         grid_width: 0.03,
         num_grids: params.num_grids || 15,
-        shares_per_grid: params.shares_per_grid || 500,
+        grid_investment_percent: params.grid_investment_percent || 5,
         use_volatility_adjustment: params.use_volatility_adjustment ?? true
       },
       signals: { buy_signals: [], sell_signals: [] },

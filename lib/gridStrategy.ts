@@ -224,7 +224,7 @@ export function backtestGridStrategy(
     initial_capital = 10000,
     grid_width = 0,
     num_grids = 15,
-    shares_per_grid = 500,
+    grid_investment_percent = 5,  // 默认每格投资5%的资金
     use_volatility_adjustment = true
   } = params;
 
@@ -282,6 +282,14 @@ export function backtestGridStrategy(
     priceRange,
     useAdaptiveGrid
   );
+
+  // 根据百分比计算每格股数
+  // 每格投资金额 = 初始资金 * 百分比 / 100
+  // 每格股数 = 每格投资金额 / 基准价格，向下取整到100的倍数（A股买卖单位）
+  const gridInvestmentAmount = initial_capital * (grid_investment_percent / 100);
+  const sharesPerGrid = Math.floor(gridInvestmentAmount / basePrice / 100) * 100;
+  // 确保每格至少100股
+  const shares_per_grid = Math.max(100, sharesPerGrid);
 
   // 初始化状态
   let cash = initial_capital;
@@ -498,7 +506,7 @@ export function backtestGridStrategy(
       initial_capital,
       grid_width: actualGridWidth,
       num_grids,
-      shares_per_grid,
+      grid_investment_percent,
       use_volatility_adjustment
     },
     signals: {
@@ -517,7 +525,7 @@ function createEmptyResult(initialCapital: number): StrategyResult {
       initial_capital: initialCapital,
       grid_width: 0.03,
       num_grids: 15,
-      shares_per_grid: 500,
+      grid_investment_percent: 5,
       use_volatility_adjustment: true
     },
     signals: {

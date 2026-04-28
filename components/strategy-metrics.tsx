@@ -45,7 +45,7 @@ export function StrategyMetricsSection({ result }: StrategyMetricsProps) {
             </div>
 
             {/* 详细指标 */}
-            <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="grid grid-cols-4 gap-3 mb-4">
                 <div className="border border-gray-200 dark:border-gray-600 rounded p-3">
                     <span className="text-xs text-gray-500 dark:text-gray-400 block mb-1">最大回撤</span>
                     <p className="text-sm font-medium text-red-600 dark:text-red-400">
@@ -62,6 +62,12 @@ export function StrategyMetricsSection({ result }: StrategyMetricsProps) {
                     <span className="text-xs text-gray-500 dark:text-gray-400 block mb-1">胜率</span>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {formatPercent(metrics.win_rate)}
+                    </p>
+                </div>
+                <div className="border border-gray-200 dark:border-gray-600 rounded p-3">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 block mb-1">盈亏</span>
+                    <p className={`text-sm font-medium ${metrics.final_value - metrics.initial_value >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                        {formatCurrency(metrics.final_value - metrics.initial_value)}
                     </p>
                 </div>
             </div>
