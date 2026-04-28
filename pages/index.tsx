@@ -20,10 +20,6 @@ const TIME_RANGE_OPTIONS = [
   { label: '上市以来', value: 0 },
   { label: '近10年', value: 10 },
   { label: '近5年', value: 5 },
-  { label: '近2年', value: 2 },
-  { label: '近1年', value: 1 },
-  { label: '近6个月', value: 0.5 },
-  { label: '近3个月', value: 0.25 },
 ];
 
 interface ValuationData {
@@ -134,9 +130,10 @@ export default function ValuationPage() {
               selectedFund={selectedFund}
               selectedYears={selectedYears}
               onYearsChange={setSelectedYears}
-              title={`${selectedFund?.abbr || 'ETF'} 净值走势`}
+              title={`${selectedFund?.abbr || 'ETF'} `}
               showLegend={true}
               height="400px"
+              timeRangeOptions={TIME_RANGE_OPTIONS}
             />
           </div>
 

@@ -2,16 +2,20 @@ import React from 'react';
 import { LineChart } from '@/components/ui/chart';
 import { ChartDataItem, FundItem } from '@/types';
 
-// 时间范围选项
-const TIME_RANGE_OPTIONS = [
+// 默认时间范围选项
+const DEFAULT_TIME_RANGE_OPTIONS = [
     { label: '上市以来', value: 0 },
     { label: '近10年', value: 10 },
     { label: '近5年', value: 5 },
     { label: '近2年', value: 2 },
     { label: '近1年', value: 1 },
     { label: '近6个月', value: 0.5 },
-    { label: '近3个月', value: 0.25 },
 ];
+
+interface TimeRangeOption {
+    label: string;
+    value: number;
+}
 
 interface PriceChartProps {
     chartData: ChartDataItem[];
@@ -21,6 +25,7 @@ interface PriceChartProps {
     title?: string;
     showLegend?: boolean;
     height?: string;
+    timeRangeOptions?: TimeRangeOption[];
 }
 
 /**
@@ -35,7 +40,10 @@ export function PriceChart({
     title,
     showLegend = false,
     height = '400px',
+    timeRangeOptions,
 }: PriceChartProps) {
+    const options = timeRangeOptions || DEFAULT_TIME_RANGE_OPTIONS;
+    
     return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors">
             {/* 标题和时间范围选择 */}
@@ -45,7 +53,7 @@ export function PriceChart({
                 </h3>
                 {/* 时间范围选择tab */}
                 <div className="flex items-center gap-1 flex-wrap">
-                    {TIME_RANGE_OPTIONS.map((option) => (
+                    {options.map((option) => (
                         <button
                             key={option.value}
                             onClick={() => onYearsChange(option.value)}
@@ -81,7 +89,7 @@ export function PriceChart({
             {showLegend && (
                 <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-400">
                     <span className="flex items-center gap-1">
-                        <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
+                        <span className="w-2 h-2 bg-gray-900 rounded-full"></span>
                         净值走势
                     </span>
                 </div>
