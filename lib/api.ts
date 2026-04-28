@@ -5,7 +5,6 @@ import { backtestGridStrategy } from './gridStrategy';
 export const ETF_LIST: FundItem[] = [
   { fund_code: '588000', abbr: '科创50', type: 'ETF', pinyin: 'KC50ETF' },
   { fund_code: '510300', abbr: '沪深300', type: 'ETF', pinyin: 'HS300ETF' },
-  { fund_code: '159951', abbr: '创业板', type: 'ETF', pinyin: 'CYBETF' },
 ];
 
 // 行业的ETF列表
@@ -23,7 +22,6 @@ import data159951 from '@/data/159951.json';
 const dataMap: Record<string, HistoryItem[]> = {
   '588000': data588000 as HistoryItem[],
   '510300': data510300 as HistoryItem[],
-  '159951': data159951 as HistoryItem[],
 };
 
 /**
@@ -47,13 +45,17 @@ export function fetchFundHistory(code: string, limit: number = 0, years: number 
 
 /**
  * 获取网格策略数据（前端计算）
+ * @param code ETF代码
+ * @param params 策略参数
+ * @param years 时间周期（年），0表示全部历史数据
  */
 export function fetchGridStrategy(
   code: string,
-  params: Partial<StrategyParams> = {}
+  params: Partial<StrategyParams> = {},
+  years: number = 0
 ): StrategyResult {
-  // 获取历史数据
-  const historyData = fetchFundHistory(code);
+  // 获取历史数据（根据时间周期过滤）
+  const historyData = fetchFundHistory(code, 0, years);
   
   if (historyData.length === 0) {
     return {

@@ -15,7 +15,7 @@ export default function GridStrategyPage() {
   const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedYears, setSelectedYears] = useState<number>(1);
+  const [selectedYears, setSelectedYears] = useState<number>(2);
 
   // 策略参数
   const [strategyParams, setStrategyParams] = useState<StrategyParams>({
@@ -36,12 +36,12 @@ export default function GridStrategyPage() {
       const histData = fetchFundHistory(code, 0, years);
       setHistoryData(histData);
 
-      // 计算策略结果
+      // 计算策略结果（根据选定的时间周期进行回测）
       const params = {
         ...strategyParams,
         grid_width: strategyParams.grid_width > 0 ? strategyParams.grid_width : undefined,
       };
-      const result = fetchGridStrategy(code, params);
+      const result = fetchGridStrategy(code, params, years);
       setStrategyResult(result);
     } catch (err: any) {
       setError(err.message || '数据获取失败');
@@ -196,7 +196,7 @@ export default function GridStrategyPage() {
 
               {/* 数据来源说明 */}
               <div className="text-center text-xs text-gray-400 dark:text-gray-500 pt-4">
-                数据来源：本地JSON数据 · 策略回测仅供学习研究，不构成投资建议
+                数据来源:天天基金 · 策略回测仅供学习研究，不构成投资建议
               </div>
             </div>
           ) : (

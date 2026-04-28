@@ -261,7 +261,7 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
                 position: 'belowBar' as const,
                 color: '#ef4444', // 红色
                 shape: 'arrowUp' as const,
-                text: count > 1 ? `买x${count}` : '买',
+                text: count > 1 ? `${count}` : '',
             }))
 
             // 生成卖出标记
@@ -270,7 +270,7 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
                 position: 'aboveBar' as const,
                 color: '#22c55e', // 绿色
                 shape: 'arrowDown' as const,
-                text: count > 1 ? `卖x${count}` : '卖',
+                text: count > 1 ? `${count}` : '',
             }))
 
             // 合并所有标记并按时间排序

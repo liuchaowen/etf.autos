@@ -155,7 +155,10 @@ function calculateOptimalBasePrice(prices: number[], method: string = 'median'):
 }
 
 /**
- * 生成网格买卖价格水平
+ * 生成网格买卖价格水平（传统对称网格）
+ * 每个买入网格对应一个卖出网格，形成一一对应关系
+ * 买入第N格的价格 = 基准价 * (1 - gridWidth * N)
+ * 卖出第N格的价格 = 基准价 * (1 + gridWidth * N)
  */
 function generateGridLevels(
   basePrice: number,
@@ -167,48 +170,28 @@ function generateGridLevels(
   const buyLevels: number[] = [];
   const sellLevels: number[] = [];
 
-  if (adaptive && priceRange) {
-    // 自适应网格
-    const low = priceRange.percentile_low;
-    const high = priceRange.percentile_high;
-
-    // 计算基准价格在区间中的相对位置
-    let relativePosition = 0.5;
-    if (high > low) {
-      relativePosition = (basePrice - low) / (high - low);
-      relativePosition = Math.max(0, Math.min(1, relativePosition));
-    }
-
-    // 根据相对位置分配买卖网格数量
-    let numBuyGrids = Math.floor(numGrids * (1 - relativePosition) * 1.5) + 1;
-    let numSellGrids = Math.floor(numGrids * relativePosition * 1.5) + 1;
-
-    numBuyGrids = Math.max(2, Math.min(numGrids, numBuyGrids));
-    numSellGrids = Math.max(2, Math.min(numGrids, numSellGrids));
-
-    // 生成买入网格
-    for (let i = 1; i <= numBuyGrids; i++) {
-      let buyPrice = basePrice * (1 - gridWidth * i);
-      if (priceRange.min > 0) {
-        buyPrice = Math.max(buyPrice, priceRange.min * 0.95);
+  // 传统对称网格：买卖网格一一对应
+  // 第N格：买入价 = 基准价 * (1 - gridWidth * N)，卖出价 = 基准价 * (1 + gridWidth * N)
+  for (let i = 1; i <= numGrids; i++) {
+    const buyPrice = basePrice * (1 - gridWidth * i);
+    const sellPrice = basePrice * (1 + gridWidth * i);
+    
+    // 可选：根据价格区间限制网格范围
+    if (priceRange) {
+      // 买入价不低于最低价的95%
+      if (priceRange.min > 0 && buyPrice < priceRange.min * 0.95) {
+        // 跳过过低的买入网格
+        continue;
       }
-      buyLevels.push(buyPrice);
-    }
-
-    // 生成卖出网格
-    for (let i = 1; i <= numSellGrids; i++) {
-      let sellPrice = basePrice * (1 + gridWidth * i);
-      if (priceRange.max > 0) {
-        sellPrice = Math.min(sellPrice, priceRange.max * 1.05);
+      // 卖出价不高于最高价的105%
+      if (priceRange.max > 0 && sellPrice > priceRange.max * 1.05) {
+        // 跳过过高的卖出网格
+        continue;
       }
-      sellLevels.push(sellPrice);
     }
-  } else {
-    // 传统对称网格
-    for (let i = 1; i <= numGrids; i++) {
-      buyLevels.push(basePrice * (1 - gridWidth * i));
-      sellLevels.push(basePrice * (1 + gridWidth * i));
-    }
+    
+    buyLevels.push(buyPrice);
+    sellLevels.push(sellPrice);
   }
 
   return [buyLevels, sellLevels];
@@ -249,7 +232,7 @@ export function backtestGridStrategy(
   const atrMultiplier = 1.5;
   const minGridWidth = 0.02;
   const maxGridWidth = 0.08;
-  const useAdaptiveGrid = true;
+  const useAdaptiveGrid = false;  // 使用传统对称网格
   const basePriceMethod = 'median';
 
   if (!historyData || historyData.length < 2) {
@@ -307,8 +290,9 @@ export function backtestGridStrategy(
   const portfolioValues: number[] = [];
   const dailyReturns: number[] = [];
 
-  // 网格状态跟踪
-  const buyGridStatus = new Array(buyLevels.length).fill(false);
+  // 网格状态跟踪：记录每个网格的持仓数量
+  // 传统网格策略：买入第N格 → 卖出第N格，一一对应
+  const gridHoldings = new Array(buyLevels.length).fill(0);  // 每个网格持有的股数
 
   // 遍历历史数据
   for (let i = 0; i < sortedData.length; i++) {
@@ -317,14 +301,15 @@ export function backtestGridStrategy(
 
     if (price <= 0) continue;
 
-    // 检查买入信号
+    // 检查买入信号：从低到高检查每个买入网格
     for (let levelIdx = 0; levelIdx < buyLevels.length; levelIdx++) {
       const buyPrice = buyLevels[levelIdx];
-      if (!buyGridStatus[levelIdx] && price <= buyPrice && cash >= buyPrice * shares_per_grid) {
+      // 当价格跌破买入网格线，且该网格没有持仓，且有足够现金时买入
+      if (price <= buyPrice && gridHoldings[levelIdx] === 0 && cash >= buyPrice * shares_per_grid) {
         const cost = buyPrice * shares_per_grid;
         cash -= cost;
         shares += shares_per_grid;
-        buyGridStatus[levelIdx] = true;
+        gridHoldings[levelIdx] = shares_per_grid;  // 记录该网格持仓
 
         trades.push({
           date,
@@ -338,41 +323,27 @@ export function backtestGridStrategy(
       }
     }
 
-    // 检查卖出信号
-    if (shares >= shares_per_grid) {
-      const boughtGrids = buyGridStatus
-        .map((status, idx) => ({ status, idx, price: buyLevels[idx] }))
-        .filter(item => item.status)
-        .sort((a, b) => b.price - a.price);
+    // 检查卖出信号：从高到低检查每个卖出网格（传统网格配对逻辑）
+    // 买入第N格后，只有当价格涨到卖出第N格时才能卖出
+    for (let levelIdx = sellLevels.length - 1; levelIdx >= 0; levelIdx--) {
+      const sellPrice = sellLevels[levelIdx];
+      
+      // 当价格涨破卖出网格线，且对应的买入网格有持仓时卖出
+      if (price >= sellPrice && gridHoldings[levelIdx] > 0) {
+        const revenue = sellPrice * shares_per_grid;
+        cash += revenue;
+        shares -= shares_per_grid;
+        gridHoldings[levelIdx] = 0;  // 清空该网格持仓
 
-      for (const { idx: buyIdx, price: correspondingBuyPrice } of boughtGrids) {
-        let sold = false;
-        for (let levelIdx = sellLevels.length - 1; levelIdx >= 0; levelIdx--) {
-          const sellPrice = sellLevels[levelIdx];
-
-          if (price >= sellPrice) {
-            const minProfitThreshold = actualGridWidth * 0.1;
-            if (sellPrice >= correspondingBuyPrice * (1 + minProfitThreshold)) {
-              const revenue = sellPrice * shares_per_grid;
-              cash += revenue;
-              shares -= shares_per_grid;
-              buyGridStatus[buyIdx] = false;
-
-              trades.push({
-                date,
-                type: 'sell',
-                price: sellPrice,
-                market_price: price,
-                shares: shares_per_grid,
-                amount: revenue,
-                grid_level: levelIdx + 1
-              });
-              sold = true;
-              break;
-            }
-          }
-        }
-        if (sold) break;
+        trades.push({
+          date,
+          type: 'sell',
+          price: sellPrice,
+          market_price: price,
+          shares: shares_per_grid,
+          amount: revenue,
+          grid_level: levelIdx + 1
+        });
       }
     }
 
@@ -471,7 +442,7 @@ export function backtestGridStrategy(
   }
 
   // 最终持仓状态
-  const finalHoldingGrids = buyGridStatus.filter(status => status).length;
+  const finalHoldingGrids = gridHoldings.filter(holding => holding > 0).length;
 
   const metrics: StrategyMetrics = {
     total_return: totalReturn,
