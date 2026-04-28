@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { TradeRecord } from '@/types';
 import { formatCurrency } from '@/lib/api';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 interface TradeTableProps {
     trades: TradeRecord[];

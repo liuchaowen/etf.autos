@@ -8,7 +8,7 @@ export default function AboutPage() {
     return (
         <>
             <Head>
-                <title>关于策略 — 网格交易</title>
+                <title>关于 — ETF</title>
                 <meta name="description" content="了解网格交易策略的核心逻辑和用时间换空间的投资理念" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
             </Head>

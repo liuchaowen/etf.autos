@@ -105,3 +105,93 @@ export function formatPercent(value: number): string {
 export function formatCurrency(value: number): string {
   return `¥${value.toFixed(2)}`;
 }
+
+/**
+ * 计算波动率（年化标准差）
+ * @param historyData 历史数据
+ * @param tradingDaysPerYear 每年交易日数，默认250
+ * @returns 年化波动率
+ */
+export function calculateVolatility(historyData: HistoryItem[], tradingDaysPerYear: number = 250): number {
+  if (!historyData || historyData.length < 2) return 0;
+
+  // 按时间排序
+  const sortedData = [...historyData].sort((a, b) => a.x - b.x);
+  const prices = sortedData.map(item => item.y);
+
+  // 计算日收益率
+  const dailyReturns: number[] = [];
+  for (let i = 1; i < prices.length; i++) {
+    const returnRate = (prices[i] - prices[i - 1]) / prices[i - 1];
+    dailyReturns.push(returnRate);
+  }
+
+  if (dailyReturns.length === 0) return 0;
+
+  // 计算平均收益率
+  const meanReturn = dailyReturns.reduce((a, b) => a + b, 0) / dailyReturns.length;
+
+  // 计算标准差
+  const variance = dailyReturns.reduce((sum, r) => sum + Math.pow(r - meanReturn, 2), 0) / dailyReturns.length;
+  const dailyStd = Math.sqrt(variance);
+
+  // 年化波动率 = 日标准差 * sqrt(交易日数)
+  const annualizedVolatility = dailyStd * Math.sqrt(tradingDaysPerYear);
+
+  return annualizedVolatility;
+}
+
+/**
+ * 计算年化收益率
+ * @param historyData 历史数据
+ * @returns 年化收益率
+ */
+export function calculateAnnualizedReturn(historyData: HistoryItem[]): number {
+  if (!historyData || historyData.length < 2) return 0;
+
+  // 按时间排序
+  const sortedData = [...historyData].sort((a, b) => a.x - b.x);
+  
+  const startPrice = sortedData[0].y;
+  const endPrice = sortedData[sortedData.length - 1].y;
+  const startTime = sortedData[0].x;
+  const endTime = sortedData[sortedData.length - 1].x;
+
+  if (startPrice <= 0) return 0;
+
+  // 计算总收益率
+  const totalReturn = (endPrice - startPrice) / startPrice;
+
+  // 计算持有年数
+  const holdingDays = (endTime - startTime) / (1000 * 60 * 60 * 24);
+  const holdingYears = holdingDays / 365;
+
+  if (holdingYears <= 0) return 0;
+
+  // 年化收益率 = (1 + 总收益率)^(1/年数) - 1
+  const annualizedReturn = Math.pow(1 + totalReturn, 1 / holdingYears) - 1;
+
+  return annualizedReturn;
+}
+
+/**
+ * 获取ETF估值数据
+ * @param code ETF代码
+ * @param years 时间周期（年），0表示全部历史数据
+ */
+export function fetchValuationData(code: string, years: number = 0): {
+  volatility: number;
+  annualizedReturn: number;
+  historyData: HistoryItem[];
+} {
+  const historyData = fetchFundHistory(code, 0, years);
+  
+  const volatility = calculateVolatility(historyData);
+  const annualizedReturn = calculateAnnualizedReturn(historyData);
+
+  return {
+    volatility,
+    annualizedReturn,
+    historyData,
+  };
+}
