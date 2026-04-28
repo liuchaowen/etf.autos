@@ -1,0 +1,367 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ──── Font Imports ──── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ──── Base Styles ──── */
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+        --primary: 222.2 47.4% 11.2%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 222.2 84% 4.9%;
+        --radius: 0.5rem;
+        --chart-1: 12 76% 61%;
+        --chart-2: 173 58% 39%;
+        --chart-3: 197 37% 24%;
+        --chart-4: 43 74% 66%;
+        --chart-5: 27 87% 67%;
+    }
+
+    .dark {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+        --card: 222.2 84% 4.9%;
+        --card-foreground: 210 40% 98%;
+        --popover: 222.2 84% 4.9%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 210 40% 98%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+        --secondary: 217.2 32.6% 17.5%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+        --accent: 217.2 32.6% 17.5%;
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 212.7 26.8% 83.9%;
+        --chart-1: 220 70% 50%;
+        --chart-2: 160 60% 45%;
+        --chart-3: 30 80% 55%;
+        --chart-4: 280 65% 60%;
+        --chart-5: 340 75% 55%;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, system-ui, Roboto, 'Helvetica Neue', sans-serif;
+        color: hsl(var(--foreground));
+        background-color: hsl(var(--background));
+        font-weight: 500;
+        line-height: 1.25;
+    }
+
+    ::selection {
+        background-color: #ff385c;
+        color: #ffffff;
+    }
+
+    /* Focus ring matching Airbnb accessibility signal */
+    :focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px #222222;
+    }
+}
+
+/* ──── Component Styles ──── */
+@layer components {
+
+    /* ──── Buttons ──── */
+
+    /* Primary CTA Button - Rausch */
+    .btn-primary {
+        @apply inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-rausch text-canvas-white font-airbnb text-button-large transition-all duration-200;
+    }
+
+    .btn-primary:hover {
+        @apply bg-rausch-deep;
+    }
+
+    .btn-primary:active {
+        transform: scale(0.92);
+    }
+
+    .btn-primary:focus-visible {
+        box-shadow: 0 0 0 2px #222222;
+    }
+
+    /* Secondary Button - Outlined */
+    .btn-secondary {
+        @apply inline-flex items-center justify-center px-4 py-2.5 rounded-[20px] bg-canvas-white text-ink-black font-airbnb text-button-default border border-hairline-gray transition-all duration-200;
+    }
+
+    .btn-secondary:hover {
+        @apply border-ink-black;
+    }
+
+    .btn-secondary:active {
+        transform: scale(0.92);
+    }
+
+    /* Icon-Only Circular Button */
+    .btn-icon {
+        @apply inline-flex items-center justify-center w-11 h-11 rounded-full bg-canvas-white text-ink-black transition-all duration-200;
+    }
+
+    .btn-icon:hover {
+        @apply bg-soft-cloud;
+    }
+
+    .btn-icon:active {
+        transform: scale(0.92);
+        box-shadow: rgba(0, 0, 0, 0.08) 0 4px 12px;
+    }
+
+    /* ──── Cards & Containers ──── */
+
+    /* Listing Card */
+    .card-listing {
+        @apply bg-canvas-white rounded-lg overflow-hidden;
+    }
+
+    .card-listing img {
+        @apply w-full aspect-[4/3] object-cover rounded-lg;
+    }
+
+    /* Booking Panel / Sticky Card */
+    .card-booking {
+        @apply bg-canvas-white rounded-xl border border-hairline-gray p-6;
+        box-shadow: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0;
+    }
+
+    /* Amenity Grid Card */
+    .card-amenity {
+        @apply bg-canvas-white border-b border-hairline-gray py-4;
+    }
+
+    /* Review Card */
+    .card-review {
+        @apply bg-canvas-white;
+    }
+
+    /* ──── Inputs & Forms ──── */
+
+    /* Search Bar */
+    .search-bar {
+        @apply bg-canvas-white border border-hairline-gray rounded-[32px] shadow-search;
+    }
+
+    .search-bar:focus-within {
+        @apply border-ink-black;
+        box-shadow: 0 0 0 2px #222222;
+    }
+
+    /* Text Input */
+    .input-text {
+        @apply bg-canvas-white border border-hairline-gray rounded-lg px-4 py-3.5 text-body-medium text-ink-black font-airbnb transition-all duration-200;
+    }
+
+    .input-text:focus {
+        @apply border-ink-black;
+        box-shadow: 0 0 0 2px #222222;
+    }
+
+    .input-text::placeholder {
+        @apply text-ash-gray;
+    }
+
+    .input-text-error {
+        @apply border-error-red;
+    }
+
+    /* ──── Navigation ──── */
+
+    /* Top Nav Desktop */
+    .nav-top {
+        @apply bg-canvas-white border-b border-hairline-gray;
+        height: 80px;
+    }
+
+    /* Tab Button */
+    .tab-button {
+        @apply flex flex-col items-center gap-1 px-3.5 py-2 text-ink-black font-airbnb text-button-default transition-all duration-200;
+    }
+
+    .tab-button-active {
+        @apply relative;
+    }
+
+    .tab-button-active::after {
+        content: '';
+        @apply absolute bottom-0 left-0 right-0 h-0.5 bg-ink-black;
+    }
+
+    /* Bottom Nav Mobile */
+    .nav-bottom-mobile {
+        @apply fixed bottom-0 left-0 right-0 bg-canvas-white border-t border-hairline-gray z-50;
+    }
+
+    /* ──── Section Styles ──── */
+
+    .section-white {
+        @apply bg-canvas-white text-ink-black;
+    }
+
+    .section-cloud {
+        @apply bg-soft-cloud text-ink-black;
+    }
+
+    /* ──── Typography Helpers ──── */
+
+    .text-link {
+        @apply text-ink-black font-airbnb text-link underline hover:text-ash-gray transition-colors duration-200;
+    }
+
+    .text-link-info {
+        @apply text-info-blue font-airbnb text-link hover:underline transition-colors duration-200;
+    }
+
+    /* ──── Image Treatment ──── */
+
+    .img-listing {
+        @apply w-full aspect-[4/3] object-cover rounded-lg;
+    }
+
+    .img-hero {
+        @apply w-full aspect-video object-cover rounded-xl;
+    }
+
+    .img-avatar {
+        @apply w-10 h-10 rounded-full object-cover;
+    }
+
+    /* ──── Guest Favorite Award ──── */
+
+    .guest-favorite-rating {
+        @apply text-[52px] font-bold text-ink-black font-airbnb leading-none;
+    }
+
+    .guest-favorite-label {
+        @apply text-micro-bold uppercase tracking-[0.32px] text-ink-black font-airbnb;
+    }
+
+    /* ──── NEW Badge ──── */
+
+    .badge-new {
+        @apply inline-flex items-center justify-center px-1.5 py-0.5 rounded text-micro-bold text-canvas-white bg-[#1a1a1a] font-airbnb;
+    }
+
+    /* ──── Price Display ──── */
+
+    .price-display {
+        @apply text-subtitle-bold text-ink-black font-airbnb;
+    }
+
+    .price-suffix {
+        @apply text-caption-medium text-ash-gray font-airbnb;
+    }
+
+    /* ──── Animation Utilities ──── */
+
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.4s ease-out forwards;
+    }
+
+    .animate-scale-in {
+        animation: scaleIn 0.2s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+}
+
+/* ──── Responsive Utilities ──── */
+@layer utilities {
+
+    /* Hide scrollbar but keep functionality */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Line clamp utilities */
+    .line-clamp-1 {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
