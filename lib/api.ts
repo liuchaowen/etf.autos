@@ -16,7 +16,6 @@ export const IND_ETF_LIST: FundItem[] = [
 // 导入本地JSON数据
 import data588000 from '@/data/588000.json';
 import data510300 from '@/data/510300.json';
-import data159951 from '@/data/159951.json';
 
 // 数据映射
 const dataMap: Record<string, HistoryItem[]> = {
