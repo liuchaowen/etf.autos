@@ -5,6 +5,37 @@
 import { FundRealtime, FundHistoryItem, FundListItem } from './types';
 import { getConfig } from './config';
 
+// CORS 代理服务
+const CORS_PROXIES = [
+  'https://corsproxy.io/?',
+  'https://api.allorigins.win/raw?url=',
+];
+
+// 当前使用的代理索引
+let currentProxyIndex = 0;
+
+/**
+ * 获取当前 CORS 代理
+ */
+function getCorsProxy(): string {
+  return CORS_PROXIES[currentProxyIndex];
+}
+
+/**
+ * 切换到下一个 CORS 代理
+ */
+function switchProxy(): void {
+  currentProxyIndex = (currentProxyIndex + 1) % CORS_PROXIES.length;
+}
+
+/**
+ * 添加 CORS 代理到 URL
+ */
+function addCorsProxy(url: string): string {
+  const proxy = getCorsProxy();
+  return proxy + encodeURIComponent(url);
+}
+
 // API 基础 URL
 const BASE_URL = 'http://fund.eastmoney.com/pingzhongdata/{}.js';
 const REALTIME_URL = 'https://fundgz.1234567.com.cn/js/{}.js';
@@ -81,39 +112,41 @@ function extractJsValue(text: string, key: string): string | null {
 }
 
 /**
- * 带重试的 fetch 请求
+ * 带重试和 CORS 代理的 fetch 请求
  * @param url 请求 URL
  * @returns 响应文本
  */
 async function fetchWithRetry(url: string): Promise<string | null> {
   const { timeout, retries } = getConfig();
 
-  for (let i = 0; i < retries; i++) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
+  // 尝试每个 CORS 代理
+  for (let proxyAttempt = 0; proxyAttempt < CORS_PROXIES.length; proxyAttempt++) {
+    const proxyUrl = addCorsProxy(url);
+    
+    for (let i = 0; i < retries; i++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-      const response = await fetch(url, {
-        signal: controller.signal,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept': '*/*',
-        },
-      });
+        const response = await fetch(proxyUrl, {
+          signal: controller.signal,
+        });
 
-      clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
 
-      if (response.ok) {
-        return await response.text();
+        if (response.ok) {
+          return await response.text();
+        }
+      } catch (error) {
+        // 最后一次重试失败，切换到下一个代理
+        if (i === retries - 1) {
+          console.error(`Fetch failed for ${proxyUrl}:`, error);
+          switchProxy();
+          break;
+        }
+        // 等待 1 秒后重试
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-    } catch (error) {
-      // 最后一次重试失败则返回 null
-      if (i === retries - 1) {
-        console.error(`Fetch failed for ${url}:`, error);
-        return null;
-      }
-      // 等待 1 秒后重试
-      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
 
