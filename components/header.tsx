@@ -5,7 +5,7 @@ import { ChartIcon } from '@/components/icons';
 
 interface HeaderProps {
     /** 当前激活的页面 */
-    activePage: 'valuation' | 'backtest' | 'about';
+    activePage: 'valuation' | 'backtest' | 'about' | 'guestbook';
     /** 右侧额外内容（如 ETF 选择器） */
     rightContent?: React.ReactNode;
 }
@@ -58,6 +58,19 @@ export function Header({ activePage, rightContent }: HeaderProps) {
                                 className="relative text-sm font-medium text-[#6a6a6a] dark:text-gray-400 hover:text-[#222222] dark:hover:text-white transition-colors pb-2"
                             >
                                 关于
+                            </Link>
+                        )}
+
+                        {activePage === 'guestbook' ? (
+                            <span className="relative text-sm font-medium text-[#222222] dark:text-white pb-2 border-b-2 border-[#222222] dark:border-white">
+                                留言
+                            </span>
+                        ) : (
+                            <Link
+                                href="/guestbook"
+                                className="relative text-sm font-medium text-[#6a6a6a] dark:text-gray-400 hover:text-[#222222] dark:hover:text-white transition-colors pb-2"
+                            >
+                                留言
                             </Link>
                         )}
                     </div>

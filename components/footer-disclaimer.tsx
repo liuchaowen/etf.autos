@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface FooterDisclaimerProps {
     /**
@@ -19,7 +19,7 @@ export function FooterDisclaimer({ padding = 'sm' }: FooterDisclaimerProps) {
 
     return (
         <div className={`text-center text-[12px] font-medium text-[#6a6a6a] dark:text-gray-500 ${paddingClass} leading-[1.33]`}>
-            数据来源:天天基金 · 策略回测仅供学习研究，不构成投资建议
+            数据来源:天天基金 · 策略回测仅供学习研究，不构成投资建议 · 访问量 <span className="waline-pageview-count ml-1" data-path="/" />
         </div>
     );
 }
