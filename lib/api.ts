@@ -1,6 +1,10 @@
 import { StrategyResult, StrategyParams, FundItem, HistoryItem } from '@/types';
 import { backtestGridStrategy } from './gridStrategy';
-import { getFundHistory } from 'ttfunds-ts';
+
+// ============================================
+// API 配置
+// ============================================
+export const API_BASE_URL = 'https://ttfund.etf.xlap.top';
 
 // 市场的ETF列表
 export const ETF_LIST: FundItem[] = [
@@ -19,19 +23,25 @@ const dataCache: Record<string, { data: HistoryItem[]; timestamp: number }> = {}
 const CACHE_TTL = 60 * 60 * 1000; // 1小时缓存
 
 /**
- * 从天天基金获取基金历史数据（通过 CORS 代理）
+ * 从 API 路由获取基金历史数据
  * @param code 基金代码
  * @returns 历史数据数组
  */
 async function fetchFundHistoryFromAPI(code: string): Promise<HistoryItem[]> {
   try {
-    const data = await getFundHistory(code);
+    const response = await fetch(`${API_BASE_URL}/api/fund/history?code=${code}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: '获取数据失败' }));
+      throw new Error(errorData.error || '获取数据失败');
+    }
+    
+    const data = await response.json();
     
     if (!data || data.length === 0) {
       throw new Error('获取数据失败');
     }
     
-    // 数据格式已经匹配，直接返回
     return data as HistoryItem[];
   } catch (error) {
     console.error(`获取基金 ${code} 历史数据失败:`, error);
