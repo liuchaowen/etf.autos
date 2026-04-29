@@ -55,9 +55,9 @@ function resetConfig() {
 }
 
 // src/fetcher.ts
-var BASE_URL = "http://fund.eastmoney.com/pingzhongdata/{}.js";
+var BASE_URL = "https://fund.eastmoney.com/pingzhongdata/{}.js";
 var REALTIME_URL = "https://fundgz.1234567.com.cn/js/{}.js";
-var FUND_LIST_URL = "http://fund.eastmoney.com/js/fundcode_search.js";
+var FUND_LIST_URL = "https://fund.eastmoney.com/js/fundcode_search.js";
 function extractJsValue(text, key) {
   const start = text.indexOf(key);
   if (start === -1) return null;
