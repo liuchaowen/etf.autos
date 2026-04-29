@@ -10,27 +10,9 @@ export const API_BASE_URL = 'https://ttfund.etf.xlap.top';
 export const ETF_LIST: FundItem[] = [
   { fund_code: '588000', name: '科创50ETF华夏', abbr: 'KC50ETF', type: '指数型-股票', pinyin: 'KECHUANG50ETFHUAXIA' },
   { fund_code: '510300', name: '沪深300ETF华泰柏瑞', abbr: 'HS300ETF', type: '指数型-股票', pinyin: 'HUSHEN300ETFHUATAIBAIRUI' },
-  {
-        fund_code: "159338",
-        abbr: "ZZA500ETFGT",
-        name: "中证A500ETF国泰",
-        type: "指数型-股票",
-        pinyin: "ZHONGZHENGA500ETFGUOTAI"
-  },
-     {
-        fund_code: "159915",
-        abbr: "CYBETFYFD",
-        name: "创业板ETF易方达",
-        type: "指数型-股票",
-        pinyin: "CHUANGYEBANETFYIFANGDA"
-    },
-    {
-        fund_code: "518880",
-        abbr: "HJETFHA",
-        name: "黄金ETF华安",
-        type: "指数型-其他",
-        pinyin: "HUANGJINETFHUAAN"
-    },
+  { fund_code: "159338", abbr: "ZZA500ETFGT", name: "中证A500ETF国泰", type: "指数型-股票", pinyin: "ZHONGZHENGA500ETFGUOTAI" },
+  { fund_code: "159915", abbr: "CYBETFYFD", name: "创业板ETF易方达", type: "指数型-股票", pinyin: "CHUANGYEBANETFYIFANGDA" },
+  { fund_code: "518880", abbr: "HJETFHA", name: "黄金ETF华安", type: "指数型-其他", pinyin: "HUANGJINETFHUAAN" },
 ];
 
 

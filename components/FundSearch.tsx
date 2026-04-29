@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { SearchIcon } from './icons';
 import { ETF_LIST } from '@/lib/api';
-
-// 基金数据类型
-interface FundItem {
-    fund_code: string;
-    abbr: string;
-    name: string;
-    type: string;
-    pinyin: string;
-}
+import type { FundItem } from '@/types';
 
 interface FundSearchProps {
     /** 选择基金时的回调 */
@@ -93,7 +85,7 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
             }
 
             // 匹配名称
-            if (fund.name.toLowerCase().includes(queryLower)) {
+            if (fund.name?.toLowerCase().includes(queryLower)) {
                 results.push(fund);
                 continue;
             }
@@ -236,7 +228,7 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
                                                 {fund.fund_code}
                                             </span>
                                             <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                                                {fund.name}
+                                                {fund.name || fund.abbr}
                                             </div>
                                         </div>
                                         <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[100px] self-center">
