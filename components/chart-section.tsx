@@ -37,7 +37,7 @@ export function ChartSection({
             {/* 标题和时间范围选择 */}
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                    {selectedFund?.abbr || '净值'}
+                    {selectedFund?.name || '净值'}
                 </h3>
                 {/* 时间范围选择tab */}
                 <div className="flex items-center gap-1">
@@ -64,7 +64,7 @@ export function ChartSection({
                         showXAxis={true}
                         showYAxis={true}
                         lineWidth={1}
-                        title={selectedFund?.abbr || '净值'}
+                        title={selectedFund?.name || '净值'}
                         buySignals={buySignals}
                         sellSignals={sellSignals}
                         className="h-full"

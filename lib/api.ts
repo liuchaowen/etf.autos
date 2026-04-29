@@ -6,17 +6,33 @@ import { backtestGridStrategy } from './gridStrategy';
 // ============================================
 export const API_BASE_URL = 'https://ttfund.etf.xlap.top';
 
-// 市场的ETF列表
+// 热门ETF列表
 export const ETF_LIST: FundItem[] = [
-  { fund_code: '588000', abbr: '科创50', type: 'ETF', pinyin: 'KC50ETF' },
-  { fund_code: '510300', abbr: '沪深300', type: 'ETF', pinyin: 'HS300ETF' },
+  { fund_code: '588000', name: '科创50ETF华夏', abbr: 'KC50ETF', type: '指数型-股票', pinyin: 'KECHUANG50ETFHUAXIA' },
+  { fund_code: '510300', name: '沪深300ETF华泰柏瑞', abbr: 'HS300ETF', type: '指数型-股票', pinyin: 'HUSHEN300ETFHUATAIBAIRUI' },
+  {
+        fund_code: "159338",
+        abbr: "ZZA500ETFGT",
+        name: "中证A500ETF国泰",
+        type: "指数型-股票",
+        pinyin: "ZHONGZHENGA500ETFGUOTAI"
+  },
+     {
+        fund_code: "159915",
+        abbr: "CYBETFYFD",
+        name: "创业板ETF易方达",
+        type: "指数型-股票",
+        pinyin: "CHUANGYEBANETFYIFANGDA"
+    },
+    {
+        fund_code: "518880",
+        abbr: "HJETFHA",
+        name: "黄金ETF华安",
+        type: "指数型-其他",
+        pinyin: "HUANGJINETFHUAAN"
+    },
 ];
 
-// 行业的ETF列表
-export const IND_ETF_LIST: FundItem[] = [
-  { fund_code: '518880', abbr: '黄金ETF', type: 'ETF', pinyin: 'HJETF' },
-  { fund_code: '512010', abbr: '医药ETF', type: 'ETF', pinyin: 'YYETF' },
-];
 
 // 数据缓存
 const dataCache: Record<string, { data: HistoryItem[]; timestamp: number }> = {};

@@ -165,7 +165,7 @@ export default function EtfValuation() {
                                         </span>
                                     </div>
                                     <div className="flex items-baseline gap-1">
-                                        <span className={`text-3xl font-bold ${valuation.annualizedReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                        <span className={`text-3xl font-bold ${valuation.annualizedReturn >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                                             {valuation.annualizedReturn !== 0 ? formatPercent(valuation.annualizedReturn) : '--'}
                                         </span>
                                     </div>

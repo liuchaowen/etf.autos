@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import { Header } from '@/components/header';
-import { ChevronDownIcon, ChartIcon } from '@/components/icons';
+import { ChartIcon } from '@/components/icons';
 import { StrategyParamsSection } from '@/components/strategy-params';
 import { StrategyMetricsSection } from '@/components/strategy-metrics';
 import { TradeTable } from '@/components/trade-table';
 import { ChartSection } from '@/components/chart-section';
 import { FooterDisclaimer } from '@/components/footer-disclaimer';
+import { FundSearch } from '@/components/FundSearch';
 import { fetchGridStrategy, fetchFundHistory, ETF_LIST } from '@/lib/api';
 import { StrategyResult, StrategyParams, HistoryItem, ChartDataItem, TradeSignal, FundItem } from '@/types';
 
@@ -153,19 +154,11 @@ export default function GridStrategyPage() {
                 <Header
                     activePage="backtest"
                     rightContent={
-                        <div className="relative">
-                            <select
-                                value={selectedCode}
-                                onChange={e => setSelectedCode(e.target.value)}
-                                className="appearance-none bg-[#222222] text-white px-3 py-1.5 pr-8 text-xs cursor-pointer focus:outline-none min-w-[140px] rounded-[8px]"
-                            >
-                                {ETF_LIST.map(etf => (
-                                    <option key={etf.fund_code} value={etf.fund_code}>
-                                        {etf.abbr} ({etf.fund_code})
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDownIcon className="absolute w-4 h-4 right-2 top-1/2 -translate-y-1/2 text-white pointer-events-none" />
+                        <div className="flex items-center gap-3">
+                            <FundSearch
+                                onSelect={(fund) => setSelectedCode(fund.fund_code)}
+                                placeholder="搜索基金..."
+                            />
                         </div>
                     }
                 />

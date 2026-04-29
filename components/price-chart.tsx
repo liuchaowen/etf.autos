@@ -49,7 +49,7 @@ export function PriceChart({
             {/* 标题和时间范围选择 */}
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                    {title || selectedFund?.abbr || '净值'}
+                    {title || selectedFund?.name || '净值'}
                 </h3>
                 {/* 时间范围选择tab */}
                 <div className="flex items-center gap-1 flex-wrap">
@@ -76,7 +76,7 @@ export function PriceChart({
                         showXAxis={true}
                         showYAxis={true}
                         lineWidth={1}
-                        title={title || selectedFund?.abbr || '净值'}
+                        title={title || selectedFund?.name || '净值'}
                         className="h-full"
                     />
                 </div>

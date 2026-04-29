@@ -4,6 +4,7 @@ import { Header } from '@/components/header';
 import { ChevronDownIcon } from '@/components/icons';
 import { PriceChart } from '@/components/price-chart';
 import { FooterDisclaimer } from '@/components/footer-disclaimer';
+import { FundSearch } from '@/components/FundSearch';
 import { fetchValuationData, ETF_LIST, formatPercent } from '@/lib/api';
 import { FundItem, HistoryItem, ChartDataItem } from '@/types';
 
@@ -98,19 +99,12 @@ export default function ValuationPage() {
         <Header
           activePage="valuation"
           rightContent={
-            <div className="relative">
-              <select
-                value={selectedCode}
-                onChange={e => setSelectedCode(e.target.value)}
-                className="appearance-none bg-[#222222] text-white px-3 py-1.5 pr-8 text-xs cursor-pointer focus:outline-none min-w-[140px] rounded-[8px]"
-              >
-                {ETF_LIST.map(etf => (
-                  <option key={etf.fund_code} value={etf.fund_code}>
-                    {etf.abbr} ({etf.fund_code})
-                  </option>
-                ))}
-              </select>
-              <ChevronDownIcon className="absolute w-4 h-4 right-2 top-1/2 -translate-y-1/2 text-white pointer-events-none" />
+            <div className="flex items-center gap-3">
+              {/* 搜索组件 */}
+              <FundSearch
+                onSelect={(fund) => setSelectedCode(fund.fund_code)}
+                placeholder="搜索基金..."
+              />
             </div>
           }
         />
@@ -130,7 +124,7 @@ export default function ValuationPage() {
               selectedFund={selectedFund}
               selectedYears={selectedYears}
               onYearsChange={setSelectedYears}
-              title={`${selectedFund?.abbr || 'ETF'} `}
+              title={`${selectedFund?.name || 'ETF'} `}
               showLegend={true}
               height="400px"
               timeRangeOptions={TIME_RANGE_OPTIONS}
@@ -176,7 +170,7 @@ export default function ValuationPage() {
                     </span>
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className={`text-3xl font-bold ${valuation.annualizedReturn >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                    <span className={`text-3xl font-bold ${valuation.annualizedReturn >= 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                       {valuation.annualizedReturn !== 0 ? formatPercent(valuation.annualizedReturn) : '--'}
                     </span>
                   </div>
