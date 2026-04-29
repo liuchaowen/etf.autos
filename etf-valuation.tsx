@@ -43,12 +43,12 @@ export default function EtfValuation() {
     const [error, setError] = useState<string | null>(null);
 
     // 加载估值数据
-    const loadValuationData = useCallback((code: string, years: number = 0) => {
+    const loadValuationData = useCallback(async (code: string, years: number = 0) => {
         if (!code) return;
         setLoading(true);
         setError(null);
         try {
-            const data = fetchValuationData(code, years);
+            const data = await fetchValuationData(code, years);
             setValuation(data);
         } catch (err: any) {
             setError(err.message || '数据获取失败');
