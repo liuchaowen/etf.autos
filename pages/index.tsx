@@ -16,6 +16,9 @@ import { FundItem, HistoryItem, ChartDataItem } from '@/types';
  * - 显示净值走势图
  */
 
+// localStorage 缓存键名
+const VALUATION_CODE_CACHE_KEY = 'valuation_code_cache';
+
 // 时间范围选项
 const TIME_RANGE_OPTIONS = [
   { label: '上市以来', value: 0 },
@@ -29,6 +32,24 @@ interface ValuationData {
   historyData: HistoryItem[];
 }
 
+// 从 localStorage 读取缓存的ETF代码
+function loadCachedCode(): string {
+  if (typeof window === 'undefined') return ETF_LIST[0].fund_code;
+
+  try {
+    const cached = localStorage.getItem(VALUATION_CODE_CACHE_KEY);
+    if (cached) {
+      // 验证缓存数据是否有效
+      if (ETF_LIST.some(item => item.fund_code === cached)) {
+        return cached;
+      }
+    }
+  } catch {
+    // 读取失败，使用默认值
+  }
+  return ETF_LIST[0].fund_code;
+}
+
 export default function ValuationPage() {
   const [selectedCode, setSelectedCode] = useState<string>(ETF_LIST[0].fund_code);
   const [valuation, setValuation] = useState<ValuationData>({
@@ -39,6 +60,27 @@ export default function ValuationPage() {
   const [selectedYears, setSelectedYears] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
+
+  // 初始化：从缓存读取ETF代码
+  useEffect(() => {
+    if (!initialized) {
+      const cachedCode = loadCachedCode();
+      setSelectedCode(cachedCode);
+      setInitialized(true);
+    }
+  }, [initialized]);
+
+  // 当选择ETF时，保存到缓存
+  const handleCodeChange = useCallback((code: string) => {
+    setSelectedCode(code);
+    // 保存到 localStorage
+    try {
+      localStorage.setItem(VALUATION_CODE_CACHE_KEY, code);
+    } catch {
+      // 保存失败时忽略
+    }
+  }, []);
 
   // 加载估值数据
   const loadValuationData = useCallback(async (code: string, years: number = 0) => {
@@ -56,8 +98,10 @@ export default function ValuationPage() {
   }, []);
 
   useEffect(() => {
-    loadValuationData(selectedCode, selectedYears);
-  }, [selectedCode, selectedYears, loadValuationData]);
+    if (initialized) {
+      loadValuationData(selectedCode, selectedYears);
+    }
+  }, [selectedCode, selectedYears, loadValuationData, initialized]);
 
   // 为图表准备数据
   const chartData = useMemo((): ChartDataItem[] => {
@@ -102,7 +146,7 @@ export default function ValuationPage() {
             <div className="flex items-center gap-3">
               {/* 搜索组件 */}
               <FundSearch
-                onSelect={(fund) => setSelectedCode(fund.fund_code)}
+                onSelect={(fund) => handleCodeChange(fund.fund_code)}
                 placeholder="搜索基金..."
               />
             </div>

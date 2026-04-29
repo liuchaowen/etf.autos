@@ -13,6 +13,7 @@ import { StrategyResult, StrategyParams, HistoryItem, ChartDataItem, TradeSignal
 
 // localStorage 缓存键名
 const STRATEGY_PARAMS_CACHE_KEY = 'strategy_params_cache';
+const STRATEGY_CODE_CACHE_KEY = 'strategy_code_cache';
 
 // 默认策略参数
 const DEFAULT_STRATEGY_PARAMS: StrategyParams = {
@@ -48,6 +49,24 @@ function loadCachedParams(): StrategyParams {
     return DEFAULT_STRATEGY_PARAMS;
 }
 
+// 从 localStorage 读取缓存的ETF代码
+function loadCachedCode(): string {
+    if (typeof window === 'undefined') return '588000';
+
+    try {
+        const cached = localStorage.getItem(STRATEGY_CODE_CACHE_KEY);
+        if (cached) {
+            // 验证缓存数据是否有效
+            if (ETF_LIST.some(item => item.fund_code === cached)) {
+                return cached;
+            }
+        }
+    } catch {
+        // 读取失败，使用默认值
+    }
+    return '588000';
+}
+
 export default function GridStrategyPage() {
     const [selectedCode, setSelectedCode] = useState<string>('588000');
     const [strategyResult, setStrategyResult] = useState<StrategyResult | null>(null);
@@ -55,9 +74,30 @@ export default function GridStrategyPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedYears, setSelectedYears] = useState<number>(2);
+    const [initialized, setInitialized] = useState(false);
 
     // 策略参数 - 从缓存加载
     const [strategyParams, setStrategyParams] = useState<StrategyParams>(loadCachedParams);
+
+    // 初始化：从缓存读取ETF代码
+    useEffect(() => {
+        if (!initialized) {
+            const cachedCode = loadCachedCode();
+            setSelectedCode(cachedCode);
+            setInitialized(true);
+        }
+    }, [initialized]);
+
+    // 当选择ETF时，保存到缓存
+    const handleCodeChange = useCallback((code: string) => {
+        setSelectedCode(code);
+        // 保存到 localStorage
+        try {
+            localStorage.setItem(STRATEGY_CODE_CACHE_KEY, code);
+        } catch {
+            // 保存失败时忽略
+        }
+    }, []);
 
     // 加载策略数据（异步获取）
     const loadStrategyData = useCallback(async (code: string, years: number = 0) => {
@@ -84,10 +124,10 @@ export default function GridStrategyPage() {
     }, [strategyParams]);
 
     useEffect(() => {
-        if (selectedCode) {
+        if (initialized && selectedCode) {
             loadStrategyData(selectedCode, selectedYears);
         }
-    }, [selectedCode, selectedYears, loadStrategyData]);
+    }, [selectedCode, selectedYears, loadStrategyData, initialized]);
 
     // 当参数变化时，保存到 localStorage
     useEffect(() => {
@@ -156,7 +196,7 @@ export default function GridStrategyPage() {
                     rightContent={
                         <div className="flex items-center gap-3">
                             <FundSearch
-                                onSelect={(fund) => setSelectedCode(fund.fund_code)}
+                                onSelect={(fund) => handleCodeChange(fund.fund_code)}
                                 placeholder="搜索基金..."
                             />
                         </div>
