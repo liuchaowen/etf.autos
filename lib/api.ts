@@ -31,12 +31,8 @@ async function fetchFundHistoryFromAPI(code: string): Promise<HistoryItem[]> {
       throw new Error('获取数据失败');
     }
     
-    // 转换数据格式
-    return data.map(item => ({
-      x: item.date,
-      y: item.unitValue,
-      equityReturn: item.equityReturn,
-    })) as HistoryItem[];
+    // 数据格式已经匹配，直接返回
+    return data as HistoryItem[];
   } catch (error) {
     console.error(`获取基金 ${code} 历史数据失败:`, error);
     throw error;
