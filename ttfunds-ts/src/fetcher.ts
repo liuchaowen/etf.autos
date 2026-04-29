@@ -37,9 +37,9 @@ function addCorsProxy(url: string): string {
 }
 
 // API 基础 URL
-const BASE_URL = 'http://fund.eastmoney.com/pingzhongdata/{}.js';
+const BASE_URL = 'https://fund.eastmoney.com/pingzhongdata/{}.js';
 const REALTIME_URL = 'https://fundgz.1234567.com.cn/js/{}.js';
-const FUND_LIST_URL = 'http://fund.eastmoney.com/js/fundcode_search.js';
+const FUND_LIST_URL = 'https://fund.eastmoney.com/js/fundcode_search.js';
 
 /**
  * 从东财基金 JS 中提取指定变量的值
