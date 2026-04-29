@@ -13,28 +13,60 @@ export const IND_ETF_LIST: FundItem[] = [
   { fund_code: '512010', abbr: '医药ETF', type: 'ETF', pinyin: 'YYETF' },
 ];
 
-// 导入本地JSON数据
-import data588000 from '@/data/588000.json';
-import data510300 from '@/data/510300.json';
-
-// 数据映射
-const dataMap: Record<string, HistoryItem[]> = {
-  '588000': data588000 as HistoryItem[],
-  '510300': data510300 as HistoryItem[],
-};
+// 数据缓存
+const dataCache: Record<string, { data: HistoryItem[]; timestamp: number }> = {};
+const CACHE_TTL = 60 * 60 * 1000; // 1小时缓存
 
 /**
- * 获取基金历史数据（从本地JSON）
+ * 从 API 获取基金历史数据
+ * @param code 基金代码
+ * @returns 历史数据数组
  */
-export function fetchFundHistory(code: string, limit: number = 0, years: number = 0): HistoryItem[] {
-  const allData = dataMap[code] || [];
+async function fetchFundHistoryFromAPI(code: string): Promise<HistoryItem[]> {
+  try {
+    const response = await fetch(`/api/fund/history?code=${code}`);
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || '获取数据失败');
+    }
+    
+    const data = await response.json();
+    return data as HistoryItem[];
+  } catch (error) {
+    console.error(`获取基金 ${code} 历史数据失败:`, error);
+    throw error;
+  }
+}
+
+/**
+ * 获取基金历史数据（从API，带缓存）
+ * @param code 基金代码
+ * @param limit 限制返回数量
+ * @param years 时间范围（年）
+ * @returns 历史数据数组
+ */
+export async function fetchFundHistory(code: string, limit: number = 0, years: number = 0): Promise<HistoryItem[]> {
+  // 检查缓存
+  const cached = dataCache[code];
+  const now = Date.now();
+  
+  let allData: HistoryItem[];
+  
+  if (cached && (now - cached.timestamp) < CACHE_TTL) {
+    allData = cached.data;
+  } else {
+    // 从 API 获取数据
+    allData = await fetchFundHistoryFromAPI(code);
+    // 更新缓存
+    dataCache[code] = { data: allData, timestamp: now };
+  }
   
   if (limit > 0) {
     return allData.slice(-limit);
   }
   
   if (years > 0) {
-    const now = Date.now();
     const cutoff = now - years * 365 * 24 * 60 * 60 * 1000;
     return allData.filter(item => item.x >= cutoff);
   }
@@ -48,13 +80,13 @@ export function fetchFundHistory(code: string, limit: number = 0, years: number 
  * @param params 策略参数
  * @param years 时间周期（年），0表示全部历史数据
  */
-export function fetchGridStrategy(
+export async function fetchGridStrategy(
   code: string,
   params: Partial<StrategyParams> = {},
   years: number = 0
-): StrategyResult {
+): Promise<StrategyResult> {
   // 获取历史数据（根据时间周期过滤）
-  const historyData = fetchFundHistory(code, 0, years);
+  const historyData = await fetchFundHistory(code, 0, years);
   
   if (historyData.length === 0) {
     return {
@@ -179,12 +211,12 @@ export function calculateAnnualizedReturn(historyData: HistoryItem[]): number {
  * @param code ETF代码
  * @param years 时间周期（年），0表示全部历史数据
  */
-export function fetchValuationData(code: string, years: number = 0): {
+export async function fetchValuationData(code: string, years: number = 0): Promise<{
   volatility: number;
   annualizedReturn: number;
   historyData: HistoryItem[];
-} {
-  const historyData = fetchFundHistory(code, 0, years);
+}> {
+  const historyData = await fetchFundHistory(code, 0, years);
   
   const volatility = calculateVolatility(historyData);
   const annualizedReturn = calculateAnnualizedReturn(historyData);

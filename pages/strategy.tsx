@@ -58,14 +58,14 @@ export default function GridStrategyPage() {
     // 策略参数 - 从缓存加载
     const [strategyParams, setStrategyParams] = useState<StrategyParams>(loadCachedParams);
 
-    // 加载策略数据（同步计算）
-    const loadStrategyData = useCallback((code: string, years: number = 0) => {
+    // 加载策略数据（异步获取）
+    const loadStrategyData = useCallback(async (code: string, years: number = 0) => {
         if (!code) return;
         setLoading(true);
         setError(null);
         try {
             // 获取历史数据用于图表
-            const histData = fetchFundHistory(code, 0, years);
+            const histData = await fetchFundHistory(code, 0, years);
             setHistoryData(histData);
 
             // 计算策略结果（根据选定的时间周期进行回测）
@@ -73,7 +73,7 @@ export default function GridStrategyPage() {
                 ...strategyParams,
                 grid_width: strategyParams.grid_width > 0 ? strategyParams.grid_width : undefined,
             };
-            const result = fetchGridStrategy(code, params, years);
+            const result = await fetchGridStrategy(code, params, years);
             setStrategyResult(result);
         } catch (err: any) {
             setError(err.message || '数据获取失败');
