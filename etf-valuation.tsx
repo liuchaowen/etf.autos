@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Head from 'next/head';
 import { Header } from '@/components/header';
-import { ChevronDownIcon } from '@/components/icons';
+import { ChevronDown } from 'lucide-react';
 import { PriceChart } from '@/components/price-chart';
 import { FooterDisclaimer } from '@/components/footer-disclaimer';
 import { fetchValuationData, ETF_LIST, formatPercent } from '@/lib/api';
@@ -113,7 +113,7 @@ export default function EtfValuation() {
                                     </option>
                                 ))}
                             </select>
-                            <ChevronDownIcon className="absolute w-4 h-4 right-2 top-1/2 -translate-y-1/2 text-white pointer-events-none" />
+                            <ChevronDown className="absolute w-4 h-4 right-2 top-1/2 -translate-y-1/2 text-white pointer-events-none" />
                         </div>
                     }
                 />

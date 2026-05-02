@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { StrategyParams, StrategyResult } from '@/types';
-import { SettingsIcon } from './icons';
 
 interface StrategyParamsProps {
     params: StrategyParams;

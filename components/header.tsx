@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { ChartIcon } from '@/components/icons';
 
 interface HeaderProps {
     /** 当前激活的页面 */

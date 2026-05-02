@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart } from '@/components/ui/chart';
-import { StarIcon, StarFilledIcon } from './icons';
+import { Star } from 'lucide-react';
 import { isFavorite as checkIsFavorite, toggleFavorite } from '@/lib/favorites';
 import { ChartDataItem, FundItem } from '@/types';
 
@@ -77,9 +77,9 @@ export function PriceChart({
                             title={isFav ? '取消收藏' : '添加收藏'}
                         >
                             {isFav ? (
-                                <StarFilledIcon className="w-4 h-4 text-yellow-500" />
+                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                             ) : (
-                                <StarIcon className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
+                                <Star className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
                             )}
                         </button>
                     )}

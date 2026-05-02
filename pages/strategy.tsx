@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import { Header } from '@/components/header';
-import { ChartIcon } from '@/components/icons';
+import { BarChart3 } from 'lucide-react';
 import { StrategyParamsSection } from '@/components/strategy-params';
 import { StrategyMetricsSection } from '@/components/strategy-metrics';
 import { TradeTable } from '@/components/trade-table';
@@ -261,7 +261,7 @@ export default function GridStrategyPage() {
                     ) : (
                         <div className="text-center py-32">
                             <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
-                                <ChartIcon className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                                <BarChart3 className="w-10 h-10 text-gray-400 dark:text-gray-500" />
                             </div>
                             <p className="text-gray-500 dark:text-gray-400">请选择ETF开始策略回测</p>
                         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { SearchIcon, StarIcon, StarFilledIcon } from './icons';
+import { Search, Star, X } from 'lucide-react';
 import { ETF_LIST } from '@/lib/api';
 import { getFavorites, toggleFavorite, isFavorite as checkIsFavorite } from '@/lib/favorites';
 import type { FundItem } from '@/types';
@@ -203,11 +203,17 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
     const isShowingFavorites = !query.trim() && favorites.length > 0;
     const listTitle = isShowingFavorites ? '收藏ETF基金' : '热门ETF基金';
 
+    // 清除输入
+    const handleClear = () => {
+        setQuery('');
+        inputRef.current?.focus();
+    };
+
     return (
         <div className="relative">
             {/* 搜索输入框 */}
             <div className="relative">
-                <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                 <input
                     ref={inputRef}
                     type="text"
@@ -219,8 +225,17 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
                     onFocus={() => setIsOpen(true)}
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
-                    className="w-48 pl-8 pr-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-[8px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                    className="w-48 pl-8 pr-8 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-[8px] focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                 />
+                {query && (
+                    <button
+                        onClick={handleClear}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors"
+                        title="清除输入"
+                    >
+                        <X className="w-3 h-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+                    </button>
+                )}
             </div>
 
             {/* 下拉选项 */}
@@ -274,9 +289,9 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
                                                     title={isFav ? '取消收藏' : '添加收藏'}
                                                 >
                                                     {isFav ? (
-                                                        <StarFilledIcon className="w-4 h-4 text-yellow-500" />
+                                                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                                                     ) : (
-                                                        <StarIcon className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
+                                                        <Star className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
                                                     )}
                                                 </button>
                                             </div>

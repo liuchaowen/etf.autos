@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Head from 'next/head';
 import { Header } from '@/components/header';
-import { ChevronDownIcon } from '@/components/icons';
+import { ChevronDown } from 'lucide-react';
 import { PriceChart } from '@/components/price-chart';
 import { FooterDisclaimer } from '@/components/footer-disclaimer';
 import { FundSearch } from '@/components/FundSearch';
