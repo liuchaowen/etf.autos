@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { SearchIcon } from './icons';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { SearchIcon, StarIcon, StarFilledIcon } from './icons';
 import { ETF_LIST } from '@/lib/api';
+import { getFavorites, toggleFavorite, isFavorite as checkIsFavorite } from '@/lib/favorites';
 import type { FundItem } from '@/types';
 
 interface FundSearchProps {
@@ -35,6 +36,8 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
     const [funds, setFunds] = useState<FundItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
+    const [favorites, setFavorites] = useState<FundItem[]>([]);
+    const [favoriteCodes, setFavoriteCodes] = useState<Set<string>>(new Set());
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -64,11 +67,27 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
         loadFunds();
     }, []);
 
+    // 加载收藏列表
+    useEffect(() => {
+        const loadedFavorites = getFavorites();
+        setFavorites(loadedFavorites);
+        setFavoriteCodes(new Set(loadedFavorites.map(f => f.fund_code)));
+    }, []);
+
+    // 当下拉框打开时，刷新收藏列表
+    useEffect(() => {
+        if (isOpen) {
+            const loadedFavorites = getFavorites();
+            setFavorites(loadedFavorites);
+            setFavoriteCodes(new Set(loadedFavorites.map(f => f.fund_code)));
+        }
+    }, [isOpen]);
+
     // 过滤搜索结果
     const filteredFunds = useMemo(() => {
-        // 没有输入时返回ETF_LIST作为默认展示
+        // 没有输入时：有收藏显示收藏列表，无收藏显示热门ETF
         if (!query.trim()) {
-            return ETF_LIST;
+            return favorites.length > 0 ? favorites : ETF_LIST;
         }
 
         const queryLower = query.toLowerCase();
@@ -111,7 +130,7 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
         }
 
         return results;
-    }, [query, funds]);
+    }, [query, funds, favorites]);
 
     // 处理选择
     const handleSelect = (fund: FundItem) => {
@@ -120,6 +139,14 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
         setIsOpen(false);
         inputRef.current?.blur();
     };
+
+    // 处理收藏点击
+    const handleFavoriteClick = useCallback((e: React.MouseEvent, fund: FundItem) => {
+        e.stopPropagation(); // 阻止触发选择
+        const newFavorites = toggleFavorite(fund);
+        setFavorites(newFavorites);
+        setFavoriteCodes(new Set(newFavorites.map(f => f.fund_code)));
+    }, []);
 
     // 键盘导航
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -172,6 +199,10 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
         setHighlightedIndex(0);
     }, [filteredFunds]);
 
+    // 判断是否为收藏列表
+    const isShowingFavorites = !query.trim() && favorites.length > 0;
+    const listTitle = isShowingFavorites ? '收藏ETF基金' : '热门ETF基金';
+
     return (
         <div className="relative">
             {/* 搜索输入框 */}
@@ -210,33 +241,49 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
                         <ul className="py-1">
                             {!query.trim() && (
                                 <li className="px-3 py-1.5 text-xs text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-gray-700">
-                                    热门ETF基金
+                                    {listTitle}
                                 </li>
                             )}
-                            {filteredFunds.map((fund, index) => (
-                                <li
-                                    key={fund.fund_code}
-                                    onClick={() => handleSelect(fund)}
-                                    className={`px-3 py-2 cursor-pointer transition-colors ${index === highlightedIndex
-                                        ? 'bg-blue-50 dark:bg-blue-900/30'
-                                        : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                                        }`}
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <span className="font-medium text-sm text-gray-900 dark:text-white">
-                                                {fund.fund_code}
-                                            </span>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                                                {fund.name || fund.abbr}
+                            {filteredFunds.map((fund, index) => {
+                                const isFav = favoriteCodes.has(fund.fund_code);
+                                return (
+                                    <li
+                                        key={fund.fund_code}
+                                        onClick={() => handleSelect(fund)}
+                                        className={`px-3 py-2 cursor-pointer transition-colors ${index === highlightedIndex
+                                            ? 'bg-blue-50 dark:bg-blue-900/30'
+                                            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                                            }`}
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex-1 min-w-0">
+                                                <span className="font-medium text-sm text-gray-900 dark:text-white">
+                                                    {fund.fund_code}
+                                                </span>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                                                    {fund.name || fund.abbr}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 ml-2">
+                                                <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[80px]">
+                                                    {fund.type}
+                                                </span>
+                                                <button
+                                                    onClick={(e) => handleFavoriteClick(e, fund)}
+                                                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors flex-shrink-0"
+                                                    title={isFav ? '取消收藏' : '添加收藏'}
+                                                >
+                                                    {isFav ? (
+                                                        <StarFilledIcon className="w-4 h-4 text-yellow-500" />
+                                                    ) : (
+                                                        <StarIcon className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
+                                                    )}
+                                                </button>
                                             </div>
                                         </div>
-                                        <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[100px] self-center">
-                                            {fund.type}
-                                        </span>
-                                    </div>
-                                </li>
-                            ))}
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )}
                 </div>

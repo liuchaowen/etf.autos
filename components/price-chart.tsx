@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LineChart } from '@/components/ui/chart';
+import { StarIcon, StarFilledIcon } from './icons';
+import { isFavorite as checkIsFavorite, toggleFavorite } from '@/lib/favorites';
 import { ChartDataItem, FundItem } from '@/types';
 
 // 默认时间范围选项
@@ -43,14 +45,45 @@ export function PriceChart({
     timeRangeOptions,
 }: PriceChartProps) {
     const options = timeRangeOptions || DEFAULT_TIME_RANGE_OPTIONS;
-    
+    const [isFav, setIsFav] = useState(false);
+
+    // 当选中基金变化时，检查收藏状态
+    useEffect(() => {
+        if (selectedFund) {
+            setIsFav(checkIsFavorite(selectedFund.fund_code));
+        }
+    }, [selectedFund]);
+
+    // 处理收藏点击
+    const handleFavoriteClick = () => {
+        if (selectedFund) {
+            toggleFavorite(selectedFund);
+            setIsFav(!isFav);
+        }
+    };
+
     return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors">
             {/* 标题和时间范围选择 */}
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                    {title || selectedFund?.name || '净值'}
-                </h3>
+                <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                        {title || selectedFund?.name || '净值'}
+                    </h3>
+                    {selectedFund && (
+                        <button
+                            onClick={handleFavoriteClick}
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                            title={isFav ? '取消收藏' : '添加收藏'}
+                        >
+                            {isFav ? (
+                                <StarFilledIcon className="w-4 h-4 text-yellow-500" />
+                            ) : (
+                                <StarIcon className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
+                            )}
+                        </button>
+                    )}
+                </div>
                 {/* 时间范围选择tab */}
                 <div className="flex items-center gap-1 flex-wrap">
                     {options.map((option) => (
