@@ -69,6 +69,7 @@ function loadCachedCode(): string {
 
 export default function GridStrategyPage() {
     const [selectedCode, setSelectedCode] = useState<string>('588000');
+    const [selectedFund, setSelectedFund] = useState<FundItem | undefined>(undefined);
     const [strategyResult, setStrategyResult] = useState<StrategyResult | null>(null);
     const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(false);
@@ -84,16 +85,22 @@ export default function GridStrategyPage() {
         if (!initialized) {
             const cachedCode = loadCachedCode();
             setSelectedCode(cachedCode);
+            // 如果缓存的代码在 ETF_LIST 中，设置对应的基金信息
+            const fund = ETF_LIST.find(item => item.fund_code === cachedCode);
+            if (fund) {
+                setSelectedFund(fund);
+            }
             setInitialized(true);
         }
     }, [initialized]);
 
     // 当选择ETF时，保存到缓存
-    const handleCodeChange = useCallback((code: string) => {
-        setSelectedCode(code);
+    const handleFundSelect = useCallback((fund: FundItem) => {
+        setSelectedCode(fund.fund_code);
+        setSelectedFund(fund);
         // 保存到 localStorage
         try {
-            localStorage.setItem(STRATEGY_CODE_CACHE_KEY, code);
+            localStorage.setItem(STRATEGY_CODE_CACHE_KEY, fund.fund_code);
         } catch {
             // 保存失败时忽略
         }
@@ -174,11 +181,6 @@ export default function GridStrategyPage() {
         return strategyResult.signals.sell_signals;
     }, [strategyResult]);
 
-    const selectedFund = useMemo<FundItem | undefined>(
-        () => ETF_LIST.find(item => item.fund_code === selectedCode),
-        [selectedCode]
-    );
-
     return (
         <>
             <Head>
@@ -196,7 +198,7 @@ export default function GridStrategyPage() {
                     rightContent={
                         <div className="flex items-center gap-3">
                             <FundSearch
-                                onSelect={(fund) => handleCodeChange(fund.fund_code)}
+                                onSelect={handleFundSelect}
                                 placeholder="搜索基金..."
                             />
                         </div>
