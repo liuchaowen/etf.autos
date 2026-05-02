@@ -73,7 +73,7 @@ export function ETFListPanel({ selectedCode, onSelectCode }: ETFListPanelProps) 
             </div>
 
             {/* 列表内容 */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto scrollbar-hide [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {activeTab === 'hot' ? (
                     <div className="divide-y divide-gray-100 dark:divide-gray-700">
                         {ETF_LIST.map((fund) => (

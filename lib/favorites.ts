@@ -34,12 +34,16 @@ export function saveFavorites(favorites: FundItem[]): void {
 }
 
 /**
- * 添加收藏
+ * 添加收藏（最多9个）
  */
 export function addFavorite(fund: FundItem): FundItem[] {
     const favorites = getFavorites();
     // 检查是否已收藏
     if (!favorites.some(item => item.fund_code === fund.fund_code)) {
+        // 检查是否已达到最大数量
+        if (favorites.length >= 9) {
+            return favorites; // 已满，不添加
+        }
         favorites.push(fund);
         saveFavorites(favorites);
     }
