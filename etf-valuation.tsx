@@ -23,6 +23,7 @@ const TIME_RANGE_OPTIONS = [
     { label: '近2年', value: 2 },
     { label: '近1年', value: 1 },
     { label: '近6个月', value: 0.5 },
+    { label: '近3个月', value: 0.25 },
 ];
 
 interface ValuationData {
@@ -195,12 +196,12 @@ export default function EtfValuation() {
                                     <li>• 波动率较高的ETF适合网格交易策略，波动率较低的ETF适合长期持有</li>
                                 </ul>
                             </div>
+
+                            {/* 底部免责声明 */}
+                            <FooterDisclaimer />
                         </div>
                     )}
                 </main>
-
-                {/* 底部免责声明 */}
-                <FooterDisclaimer />
             </div>
         </>
     );
