@@ -24,9 +24,9 @@ const SLIDER_CONFIG = {
         format: (v: number) => `${(v * 100).toFixed(1)}%`,
     },
     num_grids: {
-        min: 6,
-        max: 26,
-        step: 2,
+        min: 4,
+        max: 14,
+        step: 1,
         label: '网格层数',
         format: (v: number) => `${v}层`,
     },
