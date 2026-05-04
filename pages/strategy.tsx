@@ -74,7 +74,7 @@ export default function GridStrategyPage() {
     const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [selectedYears, setSelectedYears] = useState<number>(2);
+    const [selectedYears, setSelectedYears] = useState<number>(0.5);
     const [initialized, setInitialized] = useState(false);
 
     // 策略参数 - 从缓存加载

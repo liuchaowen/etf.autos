@@ -60,7 +60,7 @@ export default function ValuationPage() {
     annualizedReturn: 0,
     historyData: []
   });
-  const [selectedYears, setSelectedYears] = useState<number>(2);
+  const [selectedYears, setSelectedYears] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);

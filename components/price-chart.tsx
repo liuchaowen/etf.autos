@@ -12,7 +12,6 @@ const DEFAULT_TIME_RANGE_OPTIONS = [
     { label: '近2年', value: 2 },
     { label: '近1年', value: 1 },
     { label: '近6个月', value: 0.5 },
-    { label: '近3个月', value: 0.25 },
 ];
 
 interface TimeRangeOption {
