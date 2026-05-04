@@ -172,7 +172,7 @@ export function StrategyParamsSection({ params, result, onChange }: StrategyPara
         <section className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-medium text-gray-900 dark:text-white">策略参数</h3>
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-white">网格参数</h3>
                 </div>
                 <div className="flex items-center gap-2">
                     <button

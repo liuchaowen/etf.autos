@@ -60,8 +60,8 @@ export default function GuestbookPage() {
     return (
         <>
             <Head>
-                <title>留言 — ETF</title>
-                <meta name="description" content="留言板 - 分享您的想法和建议" />
+                <title>互动 — ETF</title>
+                <meta name="description" content="留言/打赏 - 分享您的想法和建议" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
             </Head>
 
@@ -73,11 +73,11 @@ export default function GuestbookPage() {
                 <main className="mx-auto px-6 lg:px-8 py-4 max-w-3xl">
                     <article className="space-y-8">
                         {/* 标题区 */}
-                        <section className="text-center py-8">
-                            <h1 className="text-[28px] font-bold text-[#222222] dark:text-white mb-4">
-                                留言板
-                            </h1>
-                            <p className="text-[16px] font-medium text-[#6a6a6a] dark:text-gray-400">
+                        <section className="text-center py-4">
+                            <h2 className="text-[20px] font-bold text-[#222222] dark:text-white mb-4">
+                                留言
+                            </h2>
+                            <p className="text-[14px] font-medium text-[#6a6a6a] dark:text-gray-400">
                                 欢迎留下您的想法、建议或问题
                             </p>
                         </section>
@@ -91,7 +91,7 @@ export default function GuestbookPage() {
                         <section className="bg-white dark:bg-gray-800 rounded-[14px] border border-[#dddddd] dark:border-gray-700 p-6 transition-colors">
                             <div className="text-center">
                                 <h2 className="text-[20px] font-bold text-[#222222] dark:text-white mb-2">
-                                    打赏支持
+                                    打赏
                                 </h2>
                                 <p className="text-[14px] text-[#6a6a6a] dark:text-gray-400 mb-6">
                                     如果觉得内容有帮助，欢迎打赏支持

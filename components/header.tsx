@@ -36,14 +36,14 @@ export function Header({ activePage, rightContent }: HeaderProps) {
 
                         {activePage === 'backtest' ? (
                             <span className="relative text-sm font-medium text-[#222222] dark:text-white pb-2 border-b-2 border-[#222222] dark:border-white">
-                                网格策略
+                                策略
                             </span>
                         ) : (
                             <Link
                                 href="/strategy"
                                 className="relative text-sm font-medium text-[#6a6a6a] dark:text-gray-400 hover:text-[#222222] dark:hover:text-white transition-colors pb-2"
                             >
-                                网格策略
+                                策略
                             </Link>
                         )}
 
@@ -62,14 +62,14 @@ export function Header({ activePage, rightContent }: HeaderProps) {
 
                         {activePage === 'guestbook' ? (
                             <span className="relative text-sm font-medium text-[#222222] dark:text-white pb-2 border-b-2 border-[#222222] dark:border-white">
-                                留言
+                                互动
                             </span>
                         ) : (
                             <Link
                                 href="/guestbook"
                                 className="relative text-sm font-medium text-[#6a6a6a] dark:text-gray-400 hover:text-[#222222] dark:hover:text-white transition-colors pb-2"
                             >
-                                留言
+                                互动
                             </Link>
                         )}
                     </div>
