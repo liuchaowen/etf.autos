@@ -79,3 +79,12 @@ export interface ChartDataItem {
   time: string;
   value: number;
 }
+
+// 扩展 Window 接口以支持 Waline 实例
+declare global {
+  interface Window {
+    walineInstance?: {
+      destroy?: () => void;
+    } | null;
+  }
+}
