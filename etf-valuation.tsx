@@ -198,7 +198,7 @@ export default function EtfValuation() {
                             </div>
 
                             {/* 底部免责声明 */}
-                            <FooterDisclaimer />
+                            <FooterDisclaimer path="/valuation" />
                         </div>
                     )}
                 </main>

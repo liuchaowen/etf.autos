@@ -206,7 +206,7 @@ export default function GridStrategyPage() {
                 />
 
                 {/* 主内容区 */}
-                <main className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <main className="mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     {error && (
                         <div className="mb-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-3 text-xs rounded">
                             {error}
@@ -255,8 +255,7 @@ export default function GridStrategyPage() {
                                 <TradeTable trades={strategyResult.trades} />
                             </section>
 
-                            {/* 数据来源说明 */}
-                            <FooterDisclaimer />
+
                         </div>
                     ) : (
                         <div className="text-center py-32">
@@ -266,6 +265,7 @@ export default function GridStrategyPage() {
                             <p className="text-gray-500 dark:text-gray-400">请选择ETF开始策略回测</p>
                         </div>
                     )}
+                    <FooterDisclaimer path="/strategy" />
                 </main>
             </div>
         </>

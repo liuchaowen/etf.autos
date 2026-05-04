@@ -18,7 +18,7 @@ export default function AboutPage() {
                 <Header activePage="about" />
 
                 {/* 主内容区 */}
-                <main className="mx-auto px-6 lg:px-8 py-12 max-w-3xl">
+                <main className="mx-auto px-6 lg:px-8 py-4 max-w-3xl">
                     <article className="space-y-8">
                         {/* 标题区 - Section Heading 28px 700 */}
                         <section className="text-center py-8">
@@ -163,8 +163,10 @@ export default function AboutPage() {
                                 <li>• 投资有风险，入市需谨慎</li>
                             </ul>
                         </section>
-
                     </article>
+
+                    {/* 底部免责声明 */}
+                    <FooterDisclaimer path="/about" />
                 </main>
             </div>
         </>

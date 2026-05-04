@@ -262,7 +262,7 @@ export default function ValuationPage() {
             </div>
           </div>
           {/* 底部免责声明 */}
-          <FooterDisclaimer />
+          <FooterDisclaimer path="/" />
         </main>
       </div>
     </>

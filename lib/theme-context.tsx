@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -12,19 +12,32 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [theme, setThemeState] = useState<Theme>('light');
+    const isInitialized = useRef(false);
 
     // 初始化时从 localStorage 读取主题（仅在客户端）
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme') as Theme | null;
         if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
             setThemeState(savedTheme);
+            // 立即应用 DOM class
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             setThemeState('dark');
+            document.documentElement.classList.add('dark');
         }
+        // 标记初始化完成
+        isInitialized.current = true;
     }, []);
 
     // 当主题变化时，更新 DOM 和 localStorage
     useEffect(() => {
+        // 只有在初始化完成后才更新，避免在首次渲染时覆盖 localStorage
+        if (!isInitialized.current) return;
+
         const root = document.documentElement;
         if (theme === 'dark') {
             root.classList.add('dark');
