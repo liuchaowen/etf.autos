@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart } from '@/components/ui/chart';
-import { Star } from 'lucide-react';
+import { Star, Activity } from 'lucide-react';
 import { isFavorite as checkIsFavorite, toggleFavorite } from '@/lib/favorites';
 import { TradeSignal, ChartDataItem, FundItem } from '@/types';
+import Link from 'next/link';
 
 // 时间范围选项
 const TIME_RANGE_OPTIONS = [
@@ -62,15 +63,24 @@ export function ChartSection({
                     {selectedFund && (
                         <button
                             onClick={handleFavoriteClick}
-                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-colors"
                             title={isFav ? '取消收藏' : '添加收藏'}
                         >
                             {isFav ? (
-                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                <Star className="w-4 h-4 text-gray-400 fill-gray-400" />
                             ) : (
-                                <Star className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
+                                <Star className="w-4 h-4 text-gray-400 dark:text-gray-400 hover:text-gray-400" />
                             )}
                         </button>
+                    )}
+                    {selectedFund && (
+                        <Link
+                            href={`/?code=${selectedFund.fund_code}`}
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-500 rounded transition-colors"
+                            title="查看估值分析"
+                        >
+                            <Activity className="w-4 h-4 text-gray-900 dark:text-gray-400 hover:text-gray-500" />
+                        </Link>
                     )}
                 </div>
                 {/* 时间范围选择tab */}

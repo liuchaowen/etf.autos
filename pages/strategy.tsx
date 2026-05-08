@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { Header } from '@/components/header';
 import { BarChart3 } from 'lucide-react';
 import { StrategyParamsSection } from '@/components/strategy-params';
@@ -68,6 +69,7 @@ function loadCachedCode(): string {
 }
 
 export default function GridStrategyPage() {
+    const router = useRouter();
     const [selectedCode, setSelectedCode] = useState<string>('588000');
     const [selectedFund, setSelectedFund] = useState<FundItem | undefined>(undefined);
     const [strategyResult, setStrategyResult] = useState<StrategyResult | null>(null);
@@ -80,19 +82,29 @@ export default function GridStrategyPage() {
     // 策略参数 - 从缓存加载
     const [strategyParams, setStrategyParams] = useState<StrategyParams>(loadCachedParams);
 
-    // 初始化：从缓存读取ETF代码
+    // 初始化：从URL参数或缓存读取ETF代码
     useEffect(() => {
-        if (!initialized) {
-            const cachedCode = loadCachedCode();
-            setSelectedCode(cachedCode);
-            // 如果缓存的代码在 ETF_LIST 中，设置对应的基金信息
-            const fund = ETF_LIST.find(item => item.fund_code === cachedCode);
-            if (fund) {
-                setSelectedFund(fund);
+        if (!initialized && router.isReady) {
+            // 优先从URL参数读取
+            const urlCode = router.query.code as string;
+            if (urlCode && ETF_LIST.some(item => item.fund_code === urlCode)) {
+                setSelectedCode(urlCode);
+                const fund = ETF_LIST.find(item => item.fund_code === urlCode);
+                if (fund) {
+                    setSelectedFund(fund);
+                }
+            } else {
+                // 否则从缓存读取
+                const cachedCode = loadCachedCode();
+                setSelectedCode(cachedCode);
+                const fund = ETF_LIST.find(item => item.fund_code === cachedCode);
+                if (fund) {
+                    setSelectedFund(fund);
+                }
             }
             setInitialized(true);
         }
-    }, [initialized]);
+    }, [initialized, router.isReady, router.query.code]);
 
     // 当选择ETF时，保存到缓存
     const handleFundSelect = useCallback((fund: FundItem) => {

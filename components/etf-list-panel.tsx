@@ -112,12 +112,12 @@ export function ETFListPanel({ selectedCode, onSelectCode }: ETFListPanelProps) 
                                     </div>
                                     <button
                                         onClick={(e) => handleToggleFavorite(e, fund)}
-                                        className="ml-2 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                                        className="ml-2 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors"
                                         title={checkIsFavorite(fund.fund_code) ? '取消收藏' : '添加收藏'}
                                     >
                                         <Star
                                             className={`w-4 h-4 transition-colors ${checkIsFavorite(fund.fund_code)
-                                                ? 'text-yellow-400 fill-yellow-400'
+                                                ? 'text-gray-500 fill-gray-500'
                                                 : 'text-gray-300 dark:text-gray-500'
                                                 }`}
                                         />
@@ -162,10 +162,10 @@ export function ETFListPanel({ selectedCode, onSelectCode }: ETFListPanelProps) 
                                         </div>
                                         <button
                                             onClick={(e) => handleToggleFavorite(e, fund)}
-                                            className="ml-2 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                                            className="ml-2 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                             title="取消收藏"
                                         >
-                                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                            <Star className="w-4 h-4 text-gray-700 fill-gray-700" />
                                         </button>
                                     </div>
                                 </div>

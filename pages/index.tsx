@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { Header } from '@/components/header';
 import { PriceChart } from '@/components/price-chart';
 import { FooterDisclaimer } from '@/components/footer-disclaimer';
@@ -52,6 +53,7 @@ function loadCachedCode(): string {
 }
 
 export default function ValuationPage() {
+  const router = useRouter();
   const [selectedCode, setSelectedCode] = useState<string>(ETF_LIST[0].fund_code);
   // 保存从搜索结果选择的基金信息（可能不在 ETF_LIST 中）
   const [selectedFundFromSearch, setSelectedFundFromSearch] = useState<FundItem | null>(null);
@@ -65,14 +67,21 @@ export default function ValuationPage() {
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
 
-  // 初始化：从缓存读取ETF代码
+  // 初始化：从URL参数或缓存读取ETF代码
   useEffect(() => {
-    if (!initialized) {
-      const cachedCode = loadCachedCode();
-      setSelectedCode(cachedCode);
+    if (!initialized && router.isReady) {
+      // 优先从URL参数读取
+      const urlCode = router.query.code as string;
+      if (urlCode && ETF_LIST.some(item => item.fund_code === urlCode)) {
+        setSelectedCode(urlCode);
+      } else {
+        // 否则从缓存读取
+        const cachedCode = loadCachedCode();
+        setSelectedCode(cachedCode);
+      }
       setInitialized(true);
     }
-  }, [initialized]);
+  }, [initialized, router.isReady, router.query.code]);
 
   // 当选择ETF时，保存到缓存
   const handleFundSelect = useCallback((fund: FundItem) => {
@@ -196,6 +205,7 @@ export default function ValuationPage() {
                   showLegend={true}
                   height="400px"
                   timeRangeOptions={TIME_RANGE_OPTIONS}
+                  linkTo="strategy"
                 />
               </div>
 

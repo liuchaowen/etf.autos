@@ -311,9 +311,9 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
                                                     title={isFav ? '取消收藏' : '添加收藏'}
                                                 >
                                                     {isFav ? (
-                                                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                                        <Star className="w-4 h-4 text-gray-500 fill-gray-500" />
                                                     ) : (
-                                                        <Star className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
+                                                        <Star className="w-4 h-4 text-gray-400 hover:text-gray-500" />
                                                     )}
                                                 </button>
                                             </div>

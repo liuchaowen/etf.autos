@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart } from '@/components/ui/chart';
-import { Star } from 'lucide-react';
+import { Star, Grid3x3, Activity } from 'lucide-react';
 import { isFavorite as checkIsFavorite, toggleFavorite } from '@/lib/favorites';
 import { ChartDataItem, FundItem } from '@/types';
+import Link from 'next/link';
 
 // 默认时间范围选项
 const DEFAULT_TIME_RANGE_OPTIONS = [
@@ -28,6 +29,7 @@ interface PriceChartProps {
     showLegend?: boolean;
     height?: string;
     timeRangeOptions?: TimeRangeOption[];
+    linkTo?: 'strategy' | 'valuation';  // 跳转目标页面
 }
 
 /**
@@ -43,6 +45,7 @@ export function PriceChart({
     showLegend = false,
     height = '400px',
     timeRangeOptions,
+    linkTo,
 }: PriceChartProps) {
     const options = timeRangeOptions || DEFAULT_TIME_RANGE_OPTIONS;
     const [isFav, setIsFav] = useState(false);
@@ -73,15 +76,28 @@ export function PriceChart({
                     {selectedFund && (
                         <button
                             onClick={handleFavoriteClick}
-                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-900 rounded transition-colors"
                             title={isFav ? '取消收藏' : '添加收藏'}
                         >
                             {isFav ? (
-                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                <Star className="w-4 h-4 text-gray-500 fill-gray-500" />
                             ) : (
-                                <Star className="w-4 h-4 text-gray-400 hover:text-yellow-500" />
+                                <Star className="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-500" />
                             )}
                         </button>
+                    )}
+                    {selectedFund && linkTo && (
+                        <Link
+                            href={linkTo === 'strategy' ? `/strategy?code=${selectedFund.fund_code}` : `/?code=${selectedFund.fund_code}`}
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-500 rounded transition-colors"
+                            title={linkTo === 'strategy' ? '查看网格策略' : '查看估值分析'}
+                        >
+                            {linkTo === 'strategy' ? (
+                                <Grid3x3 className="w-4 h-4 text-gray-900 dark:text-gray-400 hover:text-gray-500" />
+                            ) : (
+                                <Activity className="w-4 h-4 text-gray-900 dark:text-gray-400 hover:text-gray-500" />
+                            )}
+                        </Link>
                     )}
                 </div>
                 {/* 时间范围选择tab */}
