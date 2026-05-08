@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Search, Star, X } from 'lucide-react';
 import { ETF_LIST } from '@/lib/api';
-import { getFavorites, toggleFavorite, isFavorite as checkIsFavorite } from '@/lib/favorites';
+import { getFavorites, toggleFavorite, isFavorite as checkIsFavorite, FAVORITES_CHANGE_EVENT } from '@/lib/favorites';
 import type { FundItem } from '@/types';
 
 interface FundSearchProps {
@@ -67,11 +67,33 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
         loadFunds();
     }, []);
 
-    // 加载收藏列表
+    // 加载收藏列表并监听变化
     useEffect(() => {
-        const loadedFavorites = getFavorites();
-        setFavorites(loadedFavorites);
-        setFavoriteCodes(new Set(loadedFavorites.map(f => f.fund_code)));
+        const updateFavorites = (newFavorites?: FundItem[]) => {
+            const loadedFavorites = newFavorites || getFavorites();
+            setFavorites(loadedFavorites);
+            setFavoriteCodes(new Set(loadedFavorites.map(f => f.fund_code)));
+        };
+
+        // 初始加载
+        updateFavorites();
+
+        // 监听收藏变化事件（同一页面内的变化）
+        const handleFavoritesChange = (e: CustomEvent<{ favorites: FundItem[] }>) => {
+            updateFavorites(e.detail.favorites);
+        };
+        window.addEventListener(FAVORITES_CHANGE_EVENT, handleFavoritesChange as EventListener);
+
+        // 监听 storage 事件（其他标签页的变化）
+        const handleStorageChange = () => {
+            updateFavorites();
+        };
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener(FAVORITES_CHANGE_EVENT, handleFavoritesChange as EventListener);
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     // 当下拉框打开时，刷新收藏列表

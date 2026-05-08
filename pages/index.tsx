@@ -174,9 +174,9 @@ export default function ValuationPage() {
             </div>
           )}
 
-          <div className="flex gap-2">
+          <div className="flex gap-2" style={{ height: 'calc(100vh - 118px)' }}>
             {/* 左侧标的列表 - 3份宽度 */}
-            <div className="w-[30%] min-w-[240px] max-w-[320px] flex-shrink-0">
+            <div className="w-[30%] min-w-[240px] max-w-[320px] flex-shrink-0 h-full">
               <ETFListPanel
                 selectedCode={selectedCode}
                 onSelectCode={handleFundSelect}
@@ -184,7 +184,7 @@ export default function ValuationPage() {
             </div>
 
             {/* 右侧估值详情 - 7份宽度 */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto h-full">
               {/* 走势图 */}
               <div className="mb-4">
                 <PriceChart
@@ -261,9 +261,9 @@ export default function ValuationPage() {
               )}
             </div>
           </div>
-          {/* 底部免责声明 */}
-          <FooterDisclaimer path="/" />
         </main>
+        {/* 底部免责声明 */}
+        <FooterDisclaimer path="/" />
       </div>
     </>
   );

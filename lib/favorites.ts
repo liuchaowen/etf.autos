@@ -3,6 +3,20 @@ import { FundItem } from '@/types';
 // localStorage 缓存键名
 const FAVORITES_KEY = 'etf_favorites';
 
+// 自定义事件名称
+export const FAVORITES_CHANGE_EVENT = 'etf_favorites_change';
+
+/**
+ * 触发收藏变化事件
+ */
+function dispatchFavoritesChange(favorites: FundItem[]): void {
+    if (typeof window === 'undefined') return;
+    
+    window.dispatchEvent(new CustomEvent(FAVORITES_CHANGE_EVENT, {
+        detail: { favorites }
+    }));
+}
+
 /**
  * 获取收藏列表
  */
@@ -28,22 +42,20 @@ export function saveFavorites(favorites: FundItem[]): void {
     
     try {
         localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+        // 触发自定义事件通知其他组件
+        dispatchFavoritesChange(favorites);
     } catch {
         // 保存失败时忽略
     }
 }
 
 /**
- * 添加收藏（最多9个）
+ * 添加收藏
  */
 export function addFavorite(fund: FundItem): FundItem[] {
     const favorites = getFavorites();
     // 检查是否已收藏
     if (!favorites.some(item => item.fund_code === fund.fund_code)) {
-        // 检查是否已达到最大数量
-        if (favorites.length >= 9) {
-            return favorites; // 已满，不添加
-        }
         favorites.push(fund);
         saveFavorites(favorites);
     }

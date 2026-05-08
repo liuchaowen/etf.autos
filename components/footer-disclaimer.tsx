@@ -20,7 +20,7 @@ interface FooterDisclaimerProps {
  * 显示数据来源和免责声明
  */
 export function FooterDisclaimer({ padding = 'sm', path = '/' }: FooterDisclaimerProps) {
-    const paddingClass = padding === 'md' ? 'pt-8' : 'pt-4';
+    const paddingClass = padding === 'md' ? 'mb-4' : ' mb-2';
 
     return (
         <div className={`text-center text-[12px] font-medium text-[#6a6a6a] dark:text-gray-500 ${paddingClass} leading-[1.33]`}>

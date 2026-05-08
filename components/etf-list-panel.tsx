@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { ETF_LIST } from '@/lib/api';
-import { getFavorites, toggleFavorite, isFavorite } from '@/lib/favorites';
+import { getFavorites, toggleFavorite, isFavorite, FAVORITES_CHANGE_EVENT } from '@/lib/favorites';
 import { FundItem } from '@/types';
 
 interface ETFListPanelProps {
@@ -22,13 +22,24 @@ export function ETFListPanel({ selectedCode, onSelectCode }: ETFListPanelProps) 
         setFavorites(getFavorites());
     }, []);
 
-    // 监听收藏变化
+    // 监听收藏变化（包括同一页面内的变化）
     useEffect(() => {
+        const handleFavoritesChange = (e: CustomEvent<{ favorites: FundItem[] }>) => {
+            setFavorites(e.detail.favorites);
+        };
+
+        // 监听自定义事件（同一页面内的变化）
+        window.addEventListener(FAVORITES_CHANGE_EVENT, handleFavoritesChange as EventListener);
+        // 监听 storage 事件（其他标签页的变化）
         const handleStorageChange = () => {
             setFavorites(getFavorites());
         };
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener(FAVORITES_CHANGE_EVENT, handleFavoritesChange as EventListener);
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     // 处理收藏切换
