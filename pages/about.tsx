@@ -164,10 +164,9 @@ export default function AboutPage() {
                             </ul>
                         </section>
                     </article>
-
-                    {/* 底部免责声明 */}
-                    <FooterDisclaimer path="/about" />
                 </main>
+                {/* 底部免责声明 */}
+                <FooterDisclaimer path="/about" />
             </div>
         </>
     );

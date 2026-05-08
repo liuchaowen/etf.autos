@@ -277,8 +277,8 @@ export default function GridStrategyPage() {
                             <p className="text-gray-500 dark:text-gray-400">请选择ETF开始策略回测</p>
                         </div>
                     )}
-                    <FooterDisclaimer path="/strategy" />
                 </main>
+                <FooterDisclaimer path="/strategy" />
             </div>
         </>
     );

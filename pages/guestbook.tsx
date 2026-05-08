@@ -115,9 +115,9 @@ export default function GuestbookPage() {
                             </div>
                         </section>
                     </article>
-                    {/* 底部免责声明 */}
-                    <FooterDisclaimer path="/guestbook" />
                 </main>
+                {/* 底部免责声明 */}
+                <FooterDisclaimer path="/guestbook" />
             </div>
         </>
     );

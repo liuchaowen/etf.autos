@@ -10,11 +10,22 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// 根据中国上海时区的时间判断应该使用的主题
+// 早上 6:00 到晚上 18:00 使用 light 主题
+// 晚上 18:00 到早上 6:00 使用 dark 主题
+function getThemeByShanghaiTime(): Theme {
+    const now = new Date();
+    // 获取上海时区的时间（UTC+8）
+    const shanghaiHour = (now.getUTCHours() + 8) % 24;
+    // 6:00 - 18:00 为白天，使用 light 主题
+    return shanghaiHour >= 6 && shanghaiHour < 18 ? 'light' : 'dark';
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [theme, setThemeState] = useState<Theme>('light');
     const isInitialized = useRef(false);
 
-    // 初始化时从 localStorage 读取主题（仅在客户端）
+    // 初始化时从 localStorage 读取主题或根据时间自动选择（仅在客户端）
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme') as Theme | null;
         if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
@@ -25,9 +36,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             } else {
                 document.documentElement.classList.remove('dark');
             }
-        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            setThemeState('dark');
-            document.documentElement.classList.add('dark');
+        } else {
+            // 没有保存的主题时，根据上海时区时间自动选择
+            const autoTheme = getThemeByShanghaiTime();
+            setThemeState(autoTheme);
+            if (autoTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         }
         // 标记初始化完成
         isInitialized.current = true;
