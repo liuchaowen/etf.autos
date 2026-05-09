@@ -183,9 +183,9 @@ export default function ValuationPage() {
             </div>
           )}
 
-          <div className="flex gap-2" style={{ height: 'calc(100vh - 118px)' }}>
+          <div className="flex gap-2">
             {/* 左侧标的列表 - 3份宽度 */}
-            <div className="w-[30%] min-w-[240px] max-w-[320px] flex-shrink-0 h-full">
+            <div className="w-[30%] min-w-[240px] max-w-[320px] flex-shrink-0 max-h-[788px]">
               <ETFListPanel
                 selectedCode={selectedCode}
                 onSelectCode={handleFundSelect}
