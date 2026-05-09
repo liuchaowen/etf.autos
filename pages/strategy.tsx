@@ -20,7 +20,7 @@ const STRATEGY_CODE_CACHE_KEY = 'strategy_code_cache';
 const DEFAULT_STRATEGY_PARAMS: StrategyParams = {
     initial_capital: 50000,
     grid_width: 0.025,
-    num_grids: 20,
+    num_grids: 14,
     grid_investment_percent: 10,  // 默认每格投资5%的资金
     use_volatility_adjustment: true,
 };
