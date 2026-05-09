@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { StrategyParams, StrategyResult } from '@/types';
-import { Save, Check } from 'lucide-react';
+import { Save } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface StrategyParamsProps {
     params: StrategyParams;
@@ -60,7 +61,7 @@ function getSliderPercent(value: number, min: number, max: number): number {
  * 策略参数配置组件
  */
 export function StrategyParamsSection({ params, result, onChange, onSave }: StrategyParamsProps) {
-    const [showToast, setShowToast] = useState(false);
+    const { toast } = useToast();
 
     const handleChange = (key: keyof StrategyParams, value: number | boolean) => {
         onChange({ ...params, [key]: value });
@@ -75,19 +76,12 @@ export function StrategyParamsSection({ params, result, onChange, onSave }: Stra
     const handleSave = () => {
         if (onSave) {
             onSave();
-            setShowToast(true);
+            toast({
+                title: '保存成功!',
+                description: '策略参数已保存到本地',
+            });
         }
     };
-
-    // Toast 自动消失
-    useEffect(() => {
-        if (showToast) {
-            const timer = setTimeout(() => {
-                setShowToast(false);
-            }, 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [showToast]);
 
     const renderSlider = (
         key: keyof StrategyParams,
@@ -165,15 +159,6 @@ export function StrategyParamsSection({ params, result, onChange, onSave }: Stra
                 {renderSlider('grid_investment_percent', SLIDER_CONFIG.grid_investment_percent)}
             </div>
 
-            {/* Toast 提示 */}
-            {showToast && (
-                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-up">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-gray-700 dark:bg-white text-white dark:text-gray-700 rounded-lg shadow-lg">
-                        <Check className="w-4 h-4" />
-                        <span className="text-sm font-medium">保存成功!</span>
-                    </div>
-                </div>
-            )}
         </section>
     );
 }
