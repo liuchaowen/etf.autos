@@ -12,8 +12,8 @@ import { FundSearch } from '@/components/FundSearch';
 import { fetchGridStrategy, fetchFundHistory, ETF_LIST } from '@/lib/api';
 import { StrategyResult, StrategyParams, HistoryItem, ChartDataItem, TradeSignal, FundItem } from '@/types';
 
-// localStorage 缓存键名
-const STRATEGY_PARAMS_CACHE_KEY = 'strategy_params_cache';
+// localStorage 缓存键名前缀
+const STRATEGY_PARAMS_CACHE_PREFIX = 'strategy_params_';
 const STRATEGY_CODE_CACHE_KEY = 'strategy_code_cache';
 
 // 默认策略参数
@@ -25,12 +25,18 @@ const DEFAULT_STRATEGY_PARAMS: StrategyParams = {
     use_volatility_adjustment: true,
 };
 
-// 从 localStorage 读取缓存的参数
-function loadCachedParams(): StrategyParams {
+// 生成缓存键：fund_code + years
+function getCacheKey(fundCode: string, years: number): string {
+    return `${STRATEGY_PARAMS_CACHE_PREFIX}${fundCode}_${years}`;
+}
+
+// 从 localStorage 读取指定标的和时间周期的缓存参数
+function loadCachedParams(fundCode: string, years: number): StrategyParams {
     if (typeof window === 'undefined') return DEFAULT_STRATEGY_PARAMS;
 
     try {
-        const cached = localStorage.getItem(STRATEGY_PARAMS_CACHE_KEY);
+        const cacheKey = getCacheKey(fundCode, years);
+        const cached = localStorage.getItem(cacheKey);
         if (cached) {
             const parsed = JSON.parse(cached) as StrategyParams;
             // 验证缓存数据是否有效
@@ -48,6 +54,18 @@ function loadCachedParams(): StrategyParams {
         // 解析失败，使用默认值
     }
     return DEFAULT_STRATEGY_PARAMS;
+}
+
+// 保存参数到 localStorage
+function saveCachedParams(fundCode: string, years: number, params: StrategyParams): void {
+    if (typeof window === 'undefined') return;
+
+    try {
+        const cacheKey = getCacheKey(fundCode, years);
+        localStorage.setItem(cacheKey, JSON.stringify(params));
+    } catch {
+        // 保存失败时忽略
+    }
 }
 
 // 从 localStorage 读取缓存的ETF代码
@@ -78,9 +96,10 @@ export default function GridStrategyPage() {
     const [error, setError] = useState<string | null>(null);
     const [selectedYears, setSelectedYears] = useState<number>(0.5);
     const [initialized, setInitialized] = useState(false);
+    const [paramsLoaded, setParamsLoaded] = useState(false);
 
-    // 策略参数 - 从缓存加载
-    const [strategyParams, setStrategyParams] = useState<StrategyParams>(loadCachedParams);
+    // 策略参数 - 初始使用默认值，后续会根据 fund_code + years 加载
+    const [strategyParams, setStrategyParams] = useState<StrategyParams>(DEFAULT_STRATEGY_PARAMS);
 
     // 初始化：从URL参数或缓存读取ETF代码
     useEffect(() => {
@@ -105,6 +124,15 @@ export default function GridStrategyPage() {
             setInitialized(true);
         }
     }, [initialized, router.isReady, router.query.code]);
+
+    // 当 fund_code 或 years 变化时，加载对应的缓存参数
+    useEffect(() => {
+        if (initialized && selectedCode) {
+            const cachedParams = loadCachedParams(selectedCode, selectedYears);
+            setStrategyParams(cachedParams);
+            setParamsLoaded(true);
+        }
+    }, [initialized, selectedCode, selectedYears]);
 
     // 当选择ETF时，保存到缓存
     const handleFundSelect = useCallback((fund: FundItem) => {
@@ -148,14 +176,12 @@ export default function GridStrategyPage() {
         }
     }, [selectedCode, selectedYears, loadStrategyData, initialized]);
 
-    // 当参数变化时，保存到 localStorage
-    useEffect(() => {
-        try {
-            localStorage.setItem(STRATEGY_PARAMS_CACHE_KEY, JSON.stringify(strategyParams));
-        } catch {
-            // 保存失败时忽略
+    // 手动保存参数到 localStorage
+    const handleSaveParams = useCallback(() => {
+        if (selectedCode) {
+            saveCachedParams(selectedCode, selectedYears, strategyParams);
         }
-    }, [strategyParams]);
+    }, [selectedCode, selectedYears, strategyParams]);
 
     // 为图表准备数据
     const chartData = useMemo((): ChartDataItem[] => {
@@ -239,6 +265,7 @@ export default function GridStrategyPage() {
                                 params={strategyParams}
                                 result={strategyResult}
                                 onChange={setStrategyParams}
+                                onSave={handleSaveParams}
                             />
 
                             {/* 两栏布局：图表 + 指标 */}

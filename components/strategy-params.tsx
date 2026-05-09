@@ -1,10 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StrategyParams, StrategyResult } from '@/types';
+import { Save, Check } from 'lucide-react';
 
 interface StrategyParamsProps {
     params: StrategyParams;
     result: StrategyResult | null;
     onChange: (params: StrategyParams) => void;
+    onSave?: () => void;
 }
 
 // 滑杆配置：定义每个参数的范围和10个均分点
@@ -57,8 +59,8 @@ function getSliderPercent(value: number, min: number, max: number): number {
 /**
  * 策略参数配置组件
  */
-export function StrategyParamsSection({ params, result, onChange }: StrategyParamsProps) {
-    const fileInputRef = useRef<HTMLInputElement>(null);
+export function StrategyParamsSection({ params, result, onChange, onSave }: StrategyParamsProps) {
+    const [showToast, setShowToast] = useState(false);
 
     const handleChange = (key: keyof StrategyParams, value: number | boolean) => {
         onChange({ ...params, [key]: value });
@@ -69,51 +71,23 @@ export function StrategyParamsSection({ params, result, onChange }: StrategyPara
         handleChange(key, value);
     };
 
-    // 导出参数为 JSON 文件
-    const handleExport = () => {
-        const data = JSON.stringify(params, null, 2);
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `strategy-params-${new Date().toISOString().slice(0, 10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    };
-
-    // 导入参数 JSON 文件
-    const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const importedParams = JSON.parse(e.target?.result as string) as StrategyParams;
-                // 验证导入的参数是否有效
-                if (
-                    typeof importedParams.initial_capital === 'number' &&
-                    typeof importedParams.grid_width === 'number' &&
-                    typeof importedParams.num_grids === 'number' &&
-                    typeof importedParams.grid_investment_percent === 'number' &&
-                    typeof importedParams.use_volatility_adjustment === 'boolean'
-                ) {
-                    onChange(importedParams);
-                } else {
-                    alert('导入的参数格式不正确');
-                }
-            } catch {
-                alert('导入失败，请检查文件格式');
-            }
-        };
-        reader.readAsText(file);
-        // 重置 input 以便可以再次选择同一文件
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+    // 保存参数到本地缓存
+    const handleSave = () => {
+        if (onSave) {
+            onSave();
+            setShowToast(true);
         }
     };
+
+    // Toast 自动消失
+    useEffect(() => {
+        if (showToast) {
+            const timer = setTimeout(() => {
+                setShowToast(false);
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [showToast]);
 
     const renderSlider = (
         key: keyof StrategyParams,
@@ -176,22 +150,12 @@ export function StrategyParamsSection({ params, result, onChange }: StrategyPara
                 </div>
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={handleExport}
-                        className="px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
-                        title="导出参数"
+                        onClick={handleSave}
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium hover:text-white text-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 rounded transition-colors"
+                        title="保存到本地,不同周期保存一份参数。"
                     >
-                        导出
+                        <Save className="w-4 h-4" />
                     </button>
-                    <label className="px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded cursor-pointer transition-colors" title="导入参数">
-                        导入
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept=".json"
-                            onChange={handleImport}
-                            className="hidden"
-                        />
-                    </label>
                 </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -200,6 +164,16 @@ export function StrategyParamsSection({ params, result, onChange }: StrategyPara
                 {renderSlider('num_grids', SLIDER_CONFIG.num_grids)}
                 {renderSlider('grid_investment_percent', SLIDER_CONFIG.grid_investment_percent)}
             </div>
+
+            {/* Toast 提示 */}
+            {showToast && (
+                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in-up">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-gray-700 dark:bg-white text-white dark:text-gray-700 rounded-lg shadow-lg">
+                        <Check className="w-4 h-4" />
+                        <span className="text-sm font-medium">保存成功!</span>
+                    </div>
+                </div>
+            )}
         </section>
     );
 }
