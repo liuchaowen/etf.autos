@@ -41,6 +41,7 @@ export interface StrategyMetrics {
   holding_shares?: number;
   holding_grids?: number;
   available_cash?: number;
+  avg_holding_ratio?: number;  // 月平均持仓资金占比
 }
 
 export interface StrategyResult {

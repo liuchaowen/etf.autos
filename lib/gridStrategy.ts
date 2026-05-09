@@ -297,6 +297,7 @@ export function backtestGridStrategy(
   const trades: Trade[] = [];
   const portfolioValues: number[] = [];
   const dailyReturns: number[] = [];
+  const holdingRatios: number[] = [];  // 每日持仓占比
 
   // 网格状态跟踪：记录每个网格的持仓数量
   // 传统网格策略：买入第N格 → 卖出第N格，一一对应
@@ -358,6 +359,11 @@ export function backtestGridStrategy(
     // 记录组合价值
     const portfolioValue = cash + shares * price;
     portfolioValues.push(portfolioValue);
+    
+    // 记录持仓占比（持仓市值 / 总资产）
+    const holdingValue = shares * price;
+    const holdingRatio = portfolioValue > 0 ? holdingValue / portfolioValue : 0;
+    holdingRatios.push(holdingRatio);
 
     // 计算日收益率
     if (i > 0 && portfolioValues[i - 1] > 0) {
@@ -451,6 +457,12 @@ export function backtestGridStrategy(
 
   // 最终持仓状态
   const finalHoldingGrids = gridHoldings.filter(holding => holding > 0).length;
+  
+  // 计算月平均持仓资金占比
+  let avgHoldingRatio = 0;
+  if (holdingRatios.length > 0) {
+    avgHoldingRatio = holdingRatios.reduce((sum, ratio) => sum + ratio, 0) / holdingRatios.length;
+  }
 
   const metrics: StrategyMetrics = {
     total_return: totalReturn,
@@ -467,7 +479,8 @@ export function backtestGridStrategy(
     holding_value: shares * finalPrice,
     holding_shares: shares,
     holding_grids: finalHoldingGrids,
-    available_cash: cash
+    available_cash: cash,
+    avg_holding_ratio: avgHoldingRatio
   };
 
   // 生成买卖信号
@@ -543,7 +556,8 @@ function createEmptyResult(initialCapital: number): StrategyResult {
       loss_trades: 0,
       final_value: initialCapital,
       initial_value: initialCapital,
-      avg_trade_cycle: 0
+      avg_trade_cycle: 0,
+      avg_holding_ratio: 0
     },
     trades: []
   };
