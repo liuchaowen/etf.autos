@@ -90,3 +90,20 @@ export function toggleFavorite(fund: FundItem): FundItem[] {
         return addFavorite(fund);
     }
 }
+
+/**
+ * 重新排序收藏列表
+ * @param fromIndex 原始位置
+ * @param toIndex 目标位置
+ */
+export function reorderFavorites(fromIndex: number, toIndex: number): FundItem[] {
+    const favorites = getFavorites();
+    if (fromIndex < 0 || fromIndex >= favorites.length || toIndex < 0 || toIndex >= favorites.length) {
+        return favorites;
+    }
+    
+    const [removed] = favorites.splice(fromIndex, 1);
+    favorites.splice(toIndex, 0, removed);
+    saveFavorites(favorites);
+    return favorites;
+}
