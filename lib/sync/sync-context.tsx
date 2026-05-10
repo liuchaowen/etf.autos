@@ -78,6 +78,62 @@ export function SyncProvider({ children }: SyncProviderProps) {
         setLastSyncTime(time);
     }, [syncManager]);
 
+    // 仅上传 - 提前定义，供其他 useEffect 使用
+    const upload = useCallback(async () => {
+        if (!isLoggedIn) {
+            setError('请先登录');
+            return;
+        }
+
+        // 清除成功状态定时器
+        if (successTimerRef.current) {
+            clearTimeout(successTimerRef.current);
+            successTimerRef.current = null;
+        }
+
+        setStatus('syncing');
+        setError(null);
+
+        try {
+            await syncManager.upload();
+            const time = syncManager.getLastSyncTime();
+            setLastSyncTime(time);
+            setStatus('success');
+        } catch (err) {
+            const message = err instanceof Error ? err.message : '上传失败';
+            setError(message);
+            setStatus('error');
+        }
+    }, [isLoggedIn, syncManager]);
+
+    // 执行完整同步
+    const sync = useCallback(async () => {
+        if (!isLoggedIn) {
+            setError('请先登录');
+            return;
+        }
+
+        // 清除成功状态定时器
+        if (successTimerRef.current) {
+            clearTimeout(successTimerRef.current);
+            successTimerRef.current = null;
+        }
+
+        setStatus('syncing');
+        setError(null);
+
+        try {
+            await syncManager.sync();
+            const time = syncManager.getLastSyncTime();
+            setLastSyncTime(time);
+            setStatus('success');
+        } catch (err) {
+            const message = err instanceof Error ? err.message : '同步失败';
+            setError(message);
+            setStatus('error');
+        }
+    }, [isLoggedIn, syncManager]);
+
     // 登录时自动同步一次
     useEffect(() => {
         if (isLoggedIn && token) {
@@ -87,7 +143,7 @@ export function SyncProvider({ children }: SyncProviderProps) {
             }, 1000);
             return () => clearTimeout(timer);
         }
-    }, [isLoggedIn, token]);
+    }, [isLoggedIn, token, sync]);
 
     // 成功状态自动恢复到 idle
     useEffect(() => {
@@ -119,7 +175,6 @@ export function SyncProvider({ children }: SyncProviderProps) {
 
             // 延迟上传，避免频繁触发
             autoUploadTimerRef.current = setTimeout(() => {
-                if (isLoggedIn && !autoUploadTimerRef.current) return;
                 upload().catch(console.error);
             }, AUTO_UPLOAD_DELAY);
         };
@@ -160,62 +215,6 @@ export function SyncProvider({ children }: SyncProviderProps) {
             clearAllTimers();
         };
     }, [clearAllTimers]);
-
-    // 执行完整同步
-    const sync = useCallback(async () => {
-        if (!isLoggedIn) {
-            setError('请先登录');
-            return;
-        }
-
-        // 清除成功状态定时器
-        if (successTimerRef.current) {
-            clearTimeout(successTimerRef.current);
-            successTimerRef.current = null;
-        }
-
-        setStatus('syncing');
-        setError(null);
-
-        try {
-            await syncManager.sync();
-            const time = syncManager.getLastSyncTime();
-            setLastSyncTime(time);
-            setStatus('success');
-        } catch (err) {
-            const message = err instanceof Error ? err.message : '同步失败';
-            setError(message);
-            setStatus('error');
-        }
-    }, [isLoggedIn, syncManager]);
-
-    // 仅上传
-    const upload = useCallback(async () => {
-        if (!isLoggedIn) {
-            setError('请先登录');
-            return;
-        }
-
-        // 清除成功状态定时器
-        if (successTimerRef.current) {
-            clearTimeout(successTimerRef.current);
-            successTimerRef.current = null;
-        }
-
-        setStatus('syncing');
-        setError(null);
-
-        try {
-            await syncManager.upload();
-            const time = syncManager.getLastSyncTime();
-            setLastSyncTime(time);
-            setStatus('success');
-        } catch (err) {
-            const message = err instanceof Error ? err.message : '上传失败';
-            setError(message);
-            setStatus('error');
-        }
-    }, [isLoggedIn, syncManager]);
 
     // 仅下载
     const download = useCallback(async () => {
