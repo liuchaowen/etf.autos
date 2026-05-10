@@ -89,12 +89,7 @@ export function SyncStatus({
 
     return (
         <div className={cn('flex items-center gap-2', className)}>
-            <Check className="w-4 h-4 text-green-500" />
-            {!compact && (
-                <span className="text-sm text-muted-foreground" title={lastSyncTime || ''}>
-                    已同步 · {formatLastSyncTime(lastSyncTime)}
-                </span>
-            )}
+
             {showButtons && (
                 <div className="flex items-center gap-1">
                     <Button
@@ -132,6 +127,12 @@ export function SyncStatus({
                         </>
                     )}
                 </div>
+            )}
+            <Check className="w-4 h-4 text-green-500" />
+            {!compact && (
+                <span className="text-sm text-muted-foreground" title={lastSyncTime || ''}>
+                    已同步 · {formatLastSyncTime(lastSyncTime)}
+                </span>
             )}
         </div>
     );

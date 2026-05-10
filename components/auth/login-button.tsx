@@ -29,7 +29,7 @@ interface LoginButtonProps {
 export function LoginButton({
   variant = 'outline',
   size = 'default',
-  className = ''
+  className = 'h-8 py-1 px-2'
 }: LoginButtonProps) {
   const router = useRouter();
   const { isLoggedIn, isLoading, user } = useAuth();
