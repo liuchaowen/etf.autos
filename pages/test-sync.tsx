@@ -40,8 +40,8 @@ async function testCollectLocalData(): Promise<TestResult[]> {
 
     // 设置测试数据
     const mockFavorites = [
-        { fund_code: '588000', fund_name: '测试ETF1', fund_type: '指数型' },
-        { fund_code: '510050', fund_name: '测试ETF2', fund_type: '指数型' },
+        { fund_code: '588000', abbr: '测试ETF1', name: '测试ETF1', type: '指数型', pinyin: 'ceshietf1' },
+        { fund_code: '510050', abbr: '测试ETF2', name: '测试ETF2', type: '指数型', pinyin: 'ceshietf2' },
     ];
     localStorage.setItem('etf_favorites', JSON.stringify(mockFavorites));
 
@@ -144,7 +144,7 @@ async function testMergeData(): Promise<TestResult[]> {
     const localData1 = {
         version: '1.0',
         updatedAt: '2024-01-01T12:00:00.000Z',
-        favorites: [{ fund_code: '588000', fund_name: '本地ETF' }],
+        favorites: [{ fund_code: '588000', abbr: '本地ETF', name: '本地ETF', type: '指数型', pinyin: 'bendietf' }],
         strategyParams: {
             '588000_1': {
                 initial_capital: 50000,
@@ -160,7 +160,7 @@ async function testMergeData(): Promise<TestResult[]> {
     const remoteData1 = {
         version: '1.0',
         updatedAt: '2024-01-02T12:00:00.000Z',
-        favorites: [{ fund_code: '510050', fund_name: '远程ETF' }],
+        favorites: [{ fund_code: '510050', abbr: '远程ETF', name: '远程ETF', type: '指数型', pinyin: 'yuancheng' }],
         strategyParams: {
             '510050_1': {
                 initial_capital: 60000,
@@ -186,7 +186,7 @@ async function testMergeData(): Promise<TestResult[]> {
     const localData2 = {
         version: '1.0',
         updatedAt: '2024-01-02T12:00:00.000Z',
-        favorites: [{ fund_code: '588000', fund_name: '本地ETF' }],
+        favorites: [{ fund_code: '588000', abbr: '本地ETF', name: '本地ETF', type: '指数型', pinyin: 'bendietf' }],
         strategyParams: {},
         lastSelectedCode: '588000',
     };
@@ -194,7 +194,7 @@ async function testMergeData(): Promise<TestResult[]> {
     const remoteData2 = {
         version: '1.0',
         updatedAt: '2024-01-01T12:00:00.000Z',
-        favorites: [{ fund_code: '510050', fund_name: '远程ETF' }],
+        favorites: [{ fund_code: '510050', abbr: '远程ETF', name: '远程ETF', type: '指数型', pinyin: 'yuancheng' }],
         strategyParams: {},
         lastSelectedCode: '510050',
     };
@@ -235,7 +235,7 @@ async function testApplyDataToLocal(): Promise<TestResult[]> {
     const testData = {
         version: '1.0',
         updatedAt: '2024-01-01T12:00:00.000Z',
-        favorites: [{ fund_code: '588000', fund_name: '测试ETF' }],
+        favorites: [{ fund_code: '588000', abbr: '测试ETF', name: '测试ETF', type: '指数型', pinyin: 'ceshietf' }],
         strategyParams: {
             '588000_1': {
                 initial_capital: 50000,
@@ -298,7 +298,7 @@ async function testFavoritesIntegration(): Promise<TestResult[]> {
     const { collectLocalData } = await import('@/lib/sync/sync-manager');
 
     // 添加收藏
-    const fund = { fund_code: '588000', fund_name: '测试ETF' };
+    const fund = { fund_code: '588000', abbr: '测试ETF', name: '测试ETF', type: '指数型', pinyin: 'ceshietf' };
     addFavorite(fund);
 
     // 检查 localStorage 是否更新
@@ -436,8 +436,8 @@ async function testFullSyncFlow(): Promise<TestResult[]> {
 
     // 设置测试数据
     const mockFavorites = [
-        { fund_code: '588000', fund_name: '测试ETF1' },
-        { fund_code: '510050', fund_name: '测试ETF2' },
+        { fund_code: '588000', abbr: '测试ETF1', name: '测试ETF1', type: '指数型', pinyin: 'ceshietf1' },
+        { fund_code: '510050', abbr: '测试ETF2', name: '测试ETF2', type: '指数型', pinyin: 'ceshietf2' },
     ];
     localStorage.setItem('etf_favorites', JSON.stringify(mockFavorites));
 
@@ -573,7 +573,7 @@ export default function TestSyncPage() {
             <Head>
                 <title>Gist 同步测试 - ETF Autos</title>
             </Head>
-            <Header />
+            <Header activePage="valuation" />
 
             <main className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
@@ -629,8 +629,8 @@ export default function TestSyncPage() {
                                                 <div
                                                     key={index}
                                                     className={`p-3 rounded-lg ${result.passed
-                                                            ? 'bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800'
-                                                            : 'bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800'
+                                                        ? 'bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800'
+                                                        : 'bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800'
                                                         }`}
                                                 >
                                                     <div className="flex items-center gap-2">
@@ -640,9 +640,9 @@ export default function TestSyncPage() {
                                                         <span className="font-medium">{result.name}</span>
                                                     </div>
                                                     <p className="text-sm text-muted-foreground mt-1">{result.message}</p>
-                                                    {result.details && (
+                                                    {result.details !== undefined && result.details !== null && (
                                                         <pre className="text-xs bg-muted p-2 rounded mt-2 overflow-auto max-h-40">
-                                                            {JSON.stringify(result.details, null, 2)}
+                                                            {typeof result.details === 'string' ? result.details : JSON.stringify(result.details, null, 2)}
                                                         </pre>
                                                     )}
                                                 </div>
