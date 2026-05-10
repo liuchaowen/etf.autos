@@ -39,7 +39,7 @@ export default function GuestbookPage() {
         setErrorMessage('');
 
         try {
-            const response = await fetch('/api/subscribe/', {
+            const response = await fetch('/api/subscribe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
