@@ -189,13 +189,22 @@ export class SyncManager {
       return localData;
     }
 
-    // 4. 合并数据
+    // 4. 如果本地数据为空但远程有数据，直接使用远程数据
+    // 这种情况发生在用户退出登录后重新登录的场景
+    if (this.isEmptyData(localData) && !this.isEmptyData(remoteData)) {
+      console.log('本地数据为空，使用远程数据');
+      applyDataToLocal(remoteData);
+      await this.gistService.writeData(remoteData);
+      return remoteData;
+    }
+
+    // 5. 合并数据
     const mergedData = mergeData(localData, remoteData);
 
-    // 5. 应用到本地
+    // 6. 应用到本地
     applyDataToLocal(mergedData);
 
-    // 6. 上传到远程
+    // 7. 上传到远程
     await this.gistService.writeData(mergedData);
 
     return mergedData;
