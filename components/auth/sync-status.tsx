@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Cloud, CloudOff, CloudUpload, CloudDownload, RefreshCw, Check, AlertCircle } from 'lucide-react';
+import { Cloud, CloudOff, CloudUpload, CloudDownload, RefreshCw, CloudCheck, CloudSync, AlertCircle } from 'lucide-react';
 import { useSync } from '@/lib/sync/sync-context';
 import { useAuth } from '@/lib/auth/use-auth';
 import { Button } from '@/components/ui/button';
@@ -41,7 +41,7 @@ export function SyncStatus({
     if (isSyncing) {
         return (
             <div className={cn('flex items-center gap-2', className)}>
-                <RefreshCw className="w-4 h-4 animate-spin text-blue-500" />
+                <CloudSync className="w-4 h-4 animate-spin text-blue-500" />
                 {!compact && <span className="text-sm text-blue-500">同步中...</span>}
             </div>
         );
@@ -75,7 +75,7 @@ export function SyncStatus({
     if (status === 'success') {
         return (
             <div className={cn('flex items-center gap-2', className)}>
-                <Check className="w-4 h-4 text-green-500" />
+                <CloudCheck className="w-4 h-4 text-green-500" />
                 {!compact && (
                     <span className="text-sm text-green-500">
                         同步完成

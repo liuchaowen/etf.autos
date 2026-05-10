@@ -283,6 +283,11 @@ export class SyncManager {
     // 清除最后选中的代码
     localStorage.removeItem(STRATEGY_CODE_CACHE_KEY);
     
+    // 触发收藏变化事件，通知其他组件更新
+    window.dispatchEvent(new CustomEvent('etf_favorites_change', {
+      detail: { favorites: [] }
+    }));
+    
     console.log('所有本地缓存数据已清除');
   }
 }

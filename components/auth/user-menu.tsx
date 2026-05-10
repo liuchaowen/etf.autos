@@ -84,7 +84,7 @@ export function UserMenu({ className = '' }: UserMenuProps) {
         <img
           src={user.avatar_url}
           alt={user.name || user.login}
-          className="w-8 h-8 rounded-full"
+          className="w-6 h-6 rounded-full"
         />
         <ChevronDown className={cn(
           'w-4 h-4 transition-transform',
