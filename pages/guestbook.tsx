@@ -71,9 +71,9 @@ export default function GuestbookPage() {
 
                 {/* 主内容区 */}
                 <main className="mx-auto px-6 lg:px-8 py-4 max-w-3xl">
-                    <article className="space-y-8">
+                    <article className="space-y-4">
                         {/* 标题区 */}
-                        <section className="text-center py-4">
+                        <section className="text-center py-2">
                             <h2 className="text-[20px] font-bold text-[#222222] dark:text-white mb-4">
                                 留言
                             </h2>
@@ -87,15 +87,20 @@ export default function GuestbookPage() {
                             <div id="waline"></div>
                         </section>
 
+                        {/* 标题区 */}
+                        <section className="text-center py-2">
+                            <h2 className="text-[20px] font-bold text-[#222222] dark:text-white mb-4">
+                                打赏
+                            </h2>
+                            <p className="text-[14px] font-medium text-[#6a6a6a] dark:text-gray-400">
+                                如果觉得内容有帮助，欢迎打赏支持
+                            </p>
+                        </section>
+
                         {/* 打赏区域 */}
                         <section className="bg-white dark:bg-gray-800 rounded-[14px] border border-[#dddddd] dark:border-gray-700 p-6 transition-colors">
                             <div className="text-center">
-                                <h2 className="text-[20px] font-bold text-[#222222] dark:text-white mb-2">
-                                    打赏
-                                </h2>
-                                <p className="text-[14px] text-[#6a6a6a] dark:text-gray-400 mb-6">
-                                    如果觉得内容有帮助，欢迎打赏支持
-                                </p>
+
                                 <div className="flex justify-center">
                                     <div className="relative">
                                         {/* 浅色模式二维码 */}
