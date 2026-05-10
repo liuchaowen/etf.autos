@@ -78,7 +78,7 @@ export function StrategyParamsSection({ params, result, onChange, onSave }: Stra
             onSave();
             toast({
                 title: '保存成功!',
-                description: '策略参数已保存到本地',
+                description: '策略参数启动同步至云端...',
             });
         }
     };
@@ -146,7 +146,7 @@ export function StrategyParamsSection({ params, result, onChange, onSave }: Stra
                     <button
                         onClick={handleSave}
                         className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium hover:text-white text-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 rounded transition-colors"
-                        title="保存到本地,不同周期保存一份参数。"
+                        title="保存并同步，不同周期保存一份参数。"
                     >
                         <Save className="w-4 h-4" />
                     </button>
