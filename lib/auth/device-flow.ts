@@ -35,16 +35,19 @@ export async function initiateDeviceFlow(): Promise<DeviceCodeResponse> {
     throw new Error('GitHub Client ID 未配置，请设置 NEXT_PUBLIC_GITHUB_CLIENT_ID 环境变量');
   }
 
+  // GitHub Device Flow API 需要 form-urlencoded 格式
+  const params = new URLSearchParams({
+    client_id: GITHUB_CLIENT_ID,
+    scope: 'gist', // 只请求 gist 权限
+  });
+
   const response = await fetch(`${GITHUB_OAUTH_BASE}/device/code`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',
     },
-    body: JSON.stringify({
-      client_id: GITHUB_CLIENT_ID,
-      scope: 'gist', // 只请求 gist 权限
-    }),
+    body: params.toString(),
   });
 
   if (!response.ok) {
@@ -82,17 +85,20 @@ export async function pollForToken(
 
     onStatusChange?.('pending', `等待授权中... (${attempts}/${maxAttempts})`);
 
+    // GitHub OAuth API 需要 form-urlencoded 格式
+    const params = new URLSearchParams({
+      client_id: GITHUB_CLIENT_ID,
+      device_code: deviceCode,
+      grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+    });
+
     const response = await fetch(`${GITHUB_OAUTH_BASE}/oauth/access_token`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json',
       },
-      body: JSON.stringify({
-        client_id: GITHUB_CLIENT_ID,
-        device_code: deviceCode,
-        grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
-      }),
+      body: params.toString(),
     });
 
     if (!response.ok) {

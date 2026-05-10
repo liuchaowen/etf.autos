@@ -580,14 +580,18 @@ pages/
 
 ## 🚀 使用说明
 
-### 1. 创建 GitHub OAuth App
+### 1. 创建 GitHub OAuth App（重要：启用 Device Flow）
 
 1. 进入 GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
 2. 填写信息：
    - **Application name**: `ETF Autos`
    - **Homepage URL**: `https://yourusername.github.io/etf.autos/`
-   - **Authorization callback URL**: 不需要（Device Flow 无回调）
-3. 获取 `Client ID`
+   - **Authorization callback URL**: `https://yourusername.github.io/etf.autos/`（可填写任意有效URL）
+3. 创建后，点击进入应用详情页
+4. **重要**：在应用设置中找到 "Device Flow" 选项并**启用它**
+   - 这是使用 Device Flow 认证的必要条件
+   - 如果不启用，会出现 "Referrer Policy strict" 错误
+5. 获取 `Client ID`
 
 ### 2. 配置环境变量
 
