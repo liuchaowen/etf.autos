@@ -81,14 +81,11 @@ export function UserMenu({ className = '' }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-muted transition-colors"
       >
-        <img 
-          src={user.avatar_url} 
+        <img
+          src={user.avatar_url}
           alt={user.name || user.login}
           className="w-8 h-8 rounded-full"
         />
-        <span className="text-sm font-medium hidden sm:inline">
-          {user.name || user.login}
-        </span>
         <ChevronDown className={cn(
           'w-4 h-4 transition-transform',
           isOpen && 'rotate-180'

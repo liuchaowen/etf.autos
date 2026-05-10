@@ -13,6 +13,7 @@ import {
     validateToken,
     isGitHubConfigured,
 } from './oauth';
+import { getSyncManager } from '@/lib/sync/sync-manager';
 
 // 初始状态
 const initialState: AuthState = {
@@ -109,7 +110,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // 登出
     const logout = useCallback(() => {
+        // 清除认证信息
         clearAuthFromStorage();
+
+        // 清除同步缓存
+        const syncManager = getSyncManager();
+        syncManager.clearSyncCache();
+        syncManager.clearToken();
+
         setState({
             isLoggedIn: false,
             isLoading: false,

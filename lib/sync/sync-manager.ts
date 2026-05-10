@@ -225,6 +225,21 @@ export class SyncManager {
     if (typeof window === 'undefined') return;
     localStorage.setItem(SYNC_STORAGE_KEYS.LOCAL_UPDATED_AT, new Date().toISOString());
   }
+
+  /**
+   * 清除同步相关的缓存数据
+   * 用于退出登录时清理
+   */
+  clearSyncCache(): void {
+    if (typeof window === 'undefined') return;
+    
+    // 清除同步相关的存储键
+    localStorage.removeItem(SYNC_STORAGE_KEYS.GIST_ID);
+    localStorage.removeItem(SYNC_STORAGE_KEYS.LAST_SYNC_TIME);
+    localStorage.removeItem(SYNC_STORAGE_KEYS.LOCAL_UPDATED_AT);
+    
+    console.log('同步缓存已清除');
+  }
 }
 
 // 全局同步管理器实例
