@@ -254,7 +254,7 @@ export default function GridStrategyPage() {
                     {loading ? (
                         <div className="flex items-center justify-center py-32">
                             <div className="text-center">
-                                <div className="animate-spin rounded-full h-16 w-16 border-2 border-gray-200 dark:border-gray-700 border-t-blue-500 mx-auto mb-4" />
+                                <div className="animate-spin rounded-full h-16 w-16 border-2 border-gray-200 dark:border-gray-700 border-t-gray-500 mx-auto mb-4" />
                                 <p className="text-gray-500 dark:text-gray-400">正在计算策略...</p>
                             </div>
                         </div>
