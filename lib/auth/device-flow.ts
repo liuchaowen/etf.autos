@@ -5,7 +5,7 @@
 
 import { DeviceCodeResponse, TokenResponse, GitHubUser, AUTH_STORAGE_KEYS } from './types';
 
-// GitHub OAuth 配置
+// GitHub OAuth 配置 - 从环境变量读取
 const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || '';
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_OAUTH_BASE = 'https://github.com/login';
@@ -41,21 +41,29 @@ export async function initiateDeviceFlow(): Promise<DeviceCodeResponse> {
     scope: 'gist', // 只请求 gist 权限
   });
 
-  const response = await fetch(`${GITHUB_OAUTH_BASE}/device/code`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
-    },
-    body: params.toString(),
-  });
+  try {
+    const response = await fetch(`${GITHUB_OAUTH_BASE}/device/code`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      },
+      body: params.toString(),
+    });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`获取设备码失败: ${response.status} ${errorText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`获取设备码失败: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    // 网络错误处理
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      throw new Error('无法连接到 GitHub，请检查网络连接或使用代理访问');
+    }
+    throw error;
   }
-
-  return response.json();
 }
 
 /**
