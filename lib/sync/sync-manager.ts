@@ -156,6 +156,17 @@ export class SyncManager {
   }
 
   /**
+   * 检查数据是否为默认空数据
+   */
+  private isEmptyData(data: UserData): boolean {
+    return (
+      data.favorites.length === 0 &&
+      Object.keys(data.strategyParams).length === 0 &&
+      data.lastSelectedCode === '588000'
+    );
+  }
+
+  /**
    * 执行完整同步（下载 + 合并 + 上传）
    */
   async sync(): Promise<UserData> {
@@ -169,13 +180,22 @@ export class SyncManager {
     // 2. 读取远程数据
     const remoteData = await this.gistService.readData();
 
-    // 3. 合并数据
+    // 3. 检查远程数据是否为空（新创建的 Gist）
+    // 如果远程是空数据，直接上传本地数据
+    if (this.isEmptyData(remoteData) && !this.isEmptyData(localData)) {
+      console.log('远程数据为空，上传本地数据');
+      await this.gistService.writeData(localData);
+      localStorage.setItem(SYNC_STORAGE_KEYS.LOCAL_UPDATED_AT, localData.updatedAt);
+      return localData;
+    }
+
+    // 4. 合并数据
     const mergedData = mergeData(localData, remoteData);
 
-    // 4. 应用到本地
+    // 5. 应用到本地
     applyDataToLocal(mergedData);
 
-    // 5. 上传到远程
+    // 6. 上传到远程
     await this.gistService.writeData(mergedData);
 
     return mergedData;
