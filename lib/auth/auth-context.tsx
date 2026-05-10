@@ -12,7 +12,7 @@ import {
     fetchGitHubUser,
     validateToken,
     isGitHubConfigured,
-} from './device-flow';
+} from './oauth';
 
 // 初始状态
 const initialState: AuthState = {
@@ -94,7 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // 登录（由登录页面调用，设置 token 和用户信息）
     const login = useCallback(async () => {
         // 这个方法主要用于登录页面完成登录后调用
-        // 实际的 Device Flow 登录流程在登录页面处理
+        // 实际的 OAuth 登录流程在登录页面处理
         const { token, user } = loadAuthFromStorage();
         if (token && user) {
             setState({

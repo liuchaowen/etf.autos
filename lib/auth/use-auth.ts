@@ -5,4 +5,4 @@
 
 export { useAuth, useAuthInternal, AuthProvider } from './auth-context';
 export type { AuthContextValue, AuthState, GitHubUser } from './types';
-export { isGitHubConfigured, getGitHubClientId } from './device-flow';
+export { isGitHubConfigured, getGitHubClientId, getLoginUrl, exchangeCodeForToken } from './oauth';
