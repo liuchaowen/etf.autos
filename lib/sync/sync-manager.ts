@@ -238,7 +238,23 @@ export class SyncManager {
     localStorage.removeItem(SYNC_STORAGE_KEYS.LAST_SYNC_TIME);
     localStorage.removeItem(SYNC_STORAGE_KEYS.LOCAL_UPDATED_AT);
     
-    console.log('同步缓存已清除');
+    // 清除收藏列表
+    localStorage.removeItem('etf_favorites');
+    
+    // 清除所有策略参数缓存
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(STRATEGY_PARAMS_CACHE_PREFIX)) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
+    // 清除最后选中的代码
+    localStorage.removeItem(STRATEGY_CODE_CACHE_KEY);
+    
+    console.log('所有本地缓存数据已清除');
   }
 }
 

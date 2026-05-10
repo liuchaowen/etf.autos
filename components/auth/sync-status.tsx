@@ -71,7 +71,59 @@ export function SyncStatus({
         );
     }
 
-    // 成功状态
+    // 成功状态（短暂显示后恢复到 idle）
+    if (status === 'success') {
+        return (
+            <div className={cn('flex items-center gap-2', className)}>
+                <Check className="w-4 h-4 text-green-500" />
+                {!compact && (
+                    <span className="text-sm text-green-500">
+                        同步完成
+                    </span>
+                )}
+                {showButtons && (
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={sync}
+                            disabled={isSyncing}
+                            className="h-6 px-2"
+                            title="立即同步"
+                        >
+                            <RefreshCw className={cn('w-3 h-3', isSyncing && 'animate-spin')} />
+                        </Button>
+                        {!compact && (
+                            <>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={upload}
+                                    disabled={isSyncing}
+                                    className="h-6 px-2"
+                                    title="上传本地数据"
+                                >
+                                    <CloudUpload className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={download}
+                                    disabled={isSyncing}
+                                    className="h-6 px-2"
+                                    title="下载云端数据"
+                                >
+                                    <CloudDownload className="w-3 h-3" />
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    // 空闲状态 - 显示上次同步时间
     const formatLastSyncTime = (time: string | null) => {
         if (!time) return '从未同步';
         const date = new Date(time);
@@ -89,7 +141,7 @@ export function SyncStatus({
 
     return (
         <div className={cn('flex items-center gap-2', className)}>
-            <Check className="w-4 h-4 text-green-500" />
+            <Cloud className="w-4 h-4 text-muted-foreground" />
             {!compact && (
                 <span className="text-sm text-muted-foreground" title={lastSyncTime || ''}>
                     已同步 · {formatLastSyncTime(lastSyncTime)}
@@ -133,7 +185,6 @@ export function SyncStatus({
                     )}
                 </div>
             )}
-
         </div>
     );
 }

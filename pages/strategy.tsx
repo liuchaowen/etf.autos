@@ -17,6 +17,32 @@ import { getSyncManager } from '@/lib/sync/sync-manager';
 const STRATEGY_PARAMS_CACHE_PREFIX = 'strategy_params_';
 const STRATEGY_CODE_CACHE_KEY = 'strategy_code_cache';
 
+// 自定义事件名称（用于通知同步上下文数据变化）
+export const STRATEGY_PARAMS_CHANGE_EVENT = 'strategy_params_change';
+export const STRATEGY_CODE_CHANGE_EVENT = 'strategy_code_change';
+
+/**
+ * 触发策略参数变化事件
+ */
+function dispatchStrategyParamsChange(fundCode: string, years: number, params: StrategyParams): void {
+    if (typeof window === 'undefined') return;
+
+    window.dispatchEvent(new CustomEvent(STRATEGY_PARAMS_CHANGE_EVENT, {
+        detail: { fundCode, years, params }
+    }));
+}
+
+/**
+ * 触发策略代码变化事件
+ */
+function dispatchStrategyCodeChange(code: string): void {
+    if (typeof window === 'undefined') return;
+
+    window.dispatchEvent(new CustomEvent(STRATEGY_CODE_CHANGE_EVENT, {
+        detail: { code }
+    }));
+}
+
 // 默认策略参数
 const DEFAULT_STRATEGY_PARAMS: StrategyParams = {
     initial_capital: 50000,
@@ -67,6 +93,8 @@ function saveCachedParams(fundCode: string, years: number, params: StrategyParam
         // 标记本地数据已修改（用于同步）
         const syncManager = getSyncManager();
         syncManager.markLocalModified();
+        // 触发自定义事件通知同步上下文
+        dispatchStrategyParamsChange(fundCode, years, params);
     } catch {
         // 保存失败时忽略
     }
@@ -145,6 +173,11 @@ export default function GridStrategyPage() {
         // 保存到 localStorage
         try {
             localStorage.setItem(STRATEGY_CODE_CACHE_KEY, fund.fund_code);
+            // 标记本地数据已修改
+            const syncManager = getSyncManager();
+            syncManager.markLocalModified();
+            // 触发自定义事件通知同步上下文
+            dispatchStrategyCodeChange(fund.fund_code);
         } catch {
             // 保存失败时忽略
         }
