@@ -88,8 +88,8 @@ export function Header({ activePage, rightContent }: HeaderProps) {
                             <>
                                 {isLoggedIn ? (
                                     <>
-                                        <SyncStatus compact showButtons={false} />
                                         <UserMenu />
+                                        <SyncStatus compact showButtons={false} />
                                     </>
                                 ) : (
                                     <LoginButton />
