@@ -117,7 +117,7 @@ lib/
 
 ```typescript
 // lib/auth/github-oauth.ts
-const CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
+const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI;
 
 // 生成登录URL
@@ -252,7 +252,7 @@ GitHub OAuth 的 `access_token` 端点 **不支持 CORS**，纯静态站点无�
 
 ```typescript
 // lib/auth/device-flow.ts
-const CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID!;
+const CLIENT_ID = process.env.GITHUB_CLIENT_ID!;
 
 interface DeviceCodeResponse {
   device_code: string;
@@ -604,7 +604,7 @@ cp .env.example .env.local
 编辑 `.env.local`，填写你的 GitHub Client ID：
 
 ```
-NEXT_PUBLIC_GITHUB_CLIENT_ID=your_actual_client_id
+GITHUB_CLIENT_ID=your_actual_client_id
 ```
 
 ### 3. 本地测试
@@ -618,7 +618,7 @@ npm run dev
 ### 4. 部署到 GitHub Pages
 
 确保在 GitHub 仓库设置中添加 Secrets：
-- `NEXT_PUBLIC_GITHUB_CLIENT_ID`: 你的 Client ID
+- `GITHUB_CLIENT_ID`: 你的 Client ID
 
 ---
 

@@ -6,7 +6,7 @@
 import { DeviceCodeResponse, TokenResponse, GitHubUser, AUTH_STORAGE_KEYS } from './types';
 
 // GitHub OAuth 配置 - 从环境变量读取
-const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || '';
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || '';
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_OAUTH_BASE = 'https://github.com/login';
 
@@ -32,7 +32,7 @@ export function getGitHubClientId(): string {
  */
 export async function initiateDeviceFlow(): Promise<DeviceCodeResponse> {
   if (!GITHUB_CLIENT_ID) {
-    throw new Error('GitHub Client ID 未配置，请设置 NEXT_PUBLIC_GITHUB_CLIENT_ID 环境变量');
+    throw new Error('GitHub Client ID 未配置，请设置 GITHUB_CLIENT_ID 环境变量');
   }
 
   // GitHub Device Flow API 需要 form-urlencoded 格式

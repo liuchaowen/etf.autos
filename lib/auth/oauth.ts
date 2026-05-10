@@ -6,7 +6,7 @@
 import { GitHubUser, AUTH_STORAGE_KEYS } from './types';
 
 // GitHub OAuth 配置
-const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || '';
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || '';
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_OAUTH_BASE = 'https://github.com/login';
 
