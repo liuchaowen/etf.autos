@@ -75,7 +75,22 @@ export function StrategyMetricsSection({ result }: StrategyMetricsProps) {
             {/* 详细指标 */}
             <div className="grid grid-cols-4 gap-3 mb-4">
                 <div className="border border-gray-200 dark:border-gray-600 rounded p-3">
-                    <span className="text-xs text-gray-500 dark:text-gray-400 block mb-1">最大回撤</span>
+                    <div className="flex items-center gap-1 mb-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 block">最大回撤</span>
+                        <div className="relative group">
+                            <CircleHelp className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 cursor-help" />
+                            <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-64">
+                                <div className="font-medium mb-1">最大回撤（Maximum Drawdown, MDD）</div>
+                                <div className="text-gray-500 dark:text-gray-400 space-y-1">
+                                    <p>衡量投资风险的核心指标，指在选定周期内，产品净值从最高点跌到最低点时的最大跌幅。</p>
+                                    <p className="font-medium text-gray-700 dark:text-gray-300">评判标准：</p>
+                                    <p>• 回撤越小，策略越稳定。</p>
+                                    <p>• 回撤越大，说明风格激进，波动大。</p>
+                                </div>
+                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-white dark:bg-gray-700 border-r border-b border-gray-200 dark:border-gray-600"></div>
+                            </div>
+                        </div>
+                    </div>
                     <p className="text-sm font-medium text-red-600 dark:text-red-400">
                         {formatPercent(metrics.max_drawdown)}
                     </p>

@@ -136,9 +136,16 @@ export async function fetchGridStrategy(
 }
 
 /**
- * 格式化百分比
+ * 格式化百分比,不带正负
  */
 export function formatPercent(value: number): string {
+  return `${(value * 100).toFixed(2)}%`;
+}
+
+/**
+ * 格式化百分比,带正负
+ */
+export function formatPercentWithSign(value: number): string {
   const sign = value >= 0 ? '+' : '';
   return `${sign}${(value * 100).toFixed(2)}%`;
 }
