@@ -41,8 +41,8 @@ export function SyncStatus({
     if (isSyncing) {
         return (
             <div className={cn('flex items-center gap-2', className)}>
-                <CloudSync className="w-4 h-4 animate-spin text-blue-500" />
-                {!compact && <span className="text-sm text-blue-500">同步中...</span>}
+                <CloudSync className="w-4 h-4 text-gray-700 dark:text-white" />
+                {!compact && <span className="text-sm text-gray-700 dark:text-white">同步中...</span>}
             </div>
         );
     }
@@ -51,9 +51,9 @@ export function SyncStatus({
     if (status === 'error' && error) {
         return (
             <div className={cn('flex items-center gap-2', className)}>
-                <AlertCircle className="w-4 h-4 text-red-500" />
+                <AlertCircle className="w-4 h-4 text-gray-700 dark:text-white" />
                 {!compact && (
-                    <span className="text-sm text-red-500" title={error}>
+                    <span className="text-sm text-gray-700 dark:text-white" title={error}>
                         同步失败
                     </span>
                 )}
@@ -75,9 +75,9 @@ export function SyncStatus({
     if (status === 'success') {
         return (
             <div className={cn('flex items-center gap-2', className)}>
-                <CloudCheck className="w-4 h-4 text-green-500" />
+                <CloudCheck className="w-4 h-4 text-gray-700 dark:text-white" />
                 {!compact && (
-                    <span className="text-sm text-green-500">
+                    <span className="text-sm text-gray-700 dark:text-white">
                         同步完成
                     </span>
                 )}
@@ -141,9 +141,9 @@ export function SyncStatus({
 
     return (
         <div className={cn('flex items-center gap-2', className)}>
-            <Cloud className="w-4 h-4 text-muted-foreground" />
+            <Cloud className="w-4 h-4 text-gray-700 dark:text-white" />
             {!compact && (
-                <span className="text-sm text-muted-foreground" title={lastSyncTime || ''}>
+                <span className="text-sm text-gray-700 dark:text-white" title={lastSyncTime || ''}>
                     已同步 · {formatLastSyncTime(lastSyncTime)}
                 </span>
             )}
