@@ -2,10 +2,5 @@
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "framework": "nextjs",
     "buildCommand": "npm run build",
-    "outputDirectory": ".next",
-    "env": {
-        "GITHUB_TOKEN": "@github-token",
-        "GITHUB_OWNER": "@github-owner",
-        "GITHUB_REPO": "@github-repo"
-    }
+    "outputDirectory": ".next"
 }
