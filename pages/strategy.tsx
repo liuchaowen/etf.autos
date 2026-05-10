@@ -11,6 +11,7 @@ import { FooterDisclaimer } from '@/components/footer-disclaimer';
 import { FundSearch } from '@/components/FundSearch';
 import { fetchGridStrategy, fetchFundHistory, ETF_LIST } from '@/lib/api';
 import { StrategyResult, StrategyParams, HistoryItem, ChartDataItem, TradeSignal, FundItem } from '@/types';
+import { getSyncManager } from '@/lib/sync/sync-manager';
 
 // localStorage 缓存键名前缀
 const STRATEGY_PARAMS_CACHE_PREFIX = 'strategy_params_';
@@ -63,6 +64,9 @@ function saveCachedParams(fundCode: string, years: number, params: StrategyParam
     try {
         const cacheKey = getCacheKey(fundCode, years);
         localStorage.setItem(cacheKey, JSON.stringify(params));
+        // 标记本地数据已修改（用于同步）
+        const syncManager = getSyncManager();
+        syncManager.markLocalModified();
     } catch {
         // 保存失败时忽略
     }

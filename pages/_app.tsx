@@ -1,6 +1,8 @@
 import type { AppProps } from 'next/app';
 import '../styles/globals.css';
 import { ThemeProvider } from '@/lib/theme-context';
+import { AuthProvider } from '@/lib/auth/use-auth';
+import { SyncProvider } from '@/lib/sync/sync-context';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Toaster } from '@/components/ui/toaster';
@@ -28,8 +30,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
     return (
         <ThemeProvider>
-            <Component {...pageProps} />
-            <Toaster />
+            <AuthProvider>
+                <SyncProvider>
+                    <Component {...pageProps} />
+                    <Toaster />
+                </SyncProvider>
+            </AuthProvider>
         </ThemeProvider>
     );
 }

@@ -1,4 +1,5 @@
 import { FundItem } from '@/types';
+import { getSyncManager } from '@/lib/sync/sync-manager';
 
 // localStorage 缓存键名
 const FAVORITES_KEY = 'etf_favorites';
@@ -15,6 +16,20 @@ function dispatchFavoritesChange(favorites: FundItem[]): void {
     window.dispatchEvent(new CustomEvent(FAVORITES_CHANGE_EVENT, {
         detail: { favorites }
     }));
+}
+
+/**
+ * 标记本地数据已修改（用于同步）
+ */
+function markLocalModified(): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+        const syncManager = getSyncManager();
+        syncManager.markLocalModified();
+    } catch {
+        // 同步管理器未初始化，忽略
+    }
 }
 
 /**
@@ -44,6 +59,8 @@ export function saveFavorites(favorites: FundItem[]): void {
         localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
         // 触发自定义事件通知其他组件
         dispatchFavoritesChange(favorites);
+        // 标记本地数据已修改
+        markLocalModified();
     } catch {
         // 保存失败时忽略
     }

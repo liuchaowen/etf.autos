@@ -1,6 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { LoginButton } from '@/components/auth/login-button';
+import { UserMenu } from '@/components/auth/user-menu';
+import { SyncStatus } from '@/components/auth/sync-status';
+import { useAuth, isGitHubConfigured } from '@/lib/auth/use-auth';
 
 interface HeaderProps {
     /** 当前激活的页面 */
@@ -10,6 +14,9 @@ interface HeaderProps {
 }
 
 export function Header({ activePage, rightContent }: HeaderProps) {
+    const { isLoggedIn } = useAuth();
+    const showAuth = isGitHubConfigured();
+
     return (
         <header className="bg-white dark:bg-gray-800 border-b border-[#dddddd] dark:border-gray-700 sticky top-0 z-50 transition-colors">
             <div className="mx-auto px-6 lg:px-8 py-4">
@@ -74,9 +81,21 @@ export function Header({ activePage, rightContent }: HeaderProps) {
                         )}
                     </div>
 
-                    {/* 右侧：额外内容 + 主题切换 */}
+                    {/* 右侧：额外内容 + 登录/同步 + 主题切换 */}
                     <div className="flex items-center gap-3">
                         {rightContent}
+                        {showAuth && (
+                            <>
+                                {isLoggedIn ? (
+                                    <>
+                                        <SyncStatus compact showButtons={false} />
+                                        <UserMenu />
+                                    </>
+                                ) : (
+                                    <LoginButton />
+                                )}
+                            </>
+                        )}
                         <ThemeToggle />
                     </div>
                 </div>
