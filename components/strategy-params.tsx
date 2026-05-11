@@ -109,7 +109,7 @@ export function StrategyParamsSection({ params, result, onChange, onSave }: Stra
                         onChange={e => handleChange(key, Number(e.target.value))}
                         className="w-full h-1 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer slider-thumb"
                         style={{
-                            background: `linear-gradient(to right, #374151 0%, #374151 ${percent}%, #e5e7eb ${percent}%, #e5e7eb 100%)`
+                            background: `linear-gradient(to right, var(--slider-active) 0%, var(--slider-active) ${percent}%, var(--slider-inactive) ${percent}%, var(--slider-inactive) 100%)`
                         }}
                     />
                     {/* 10个刻度点标记 */}
@@ -145,7 +145,7 @@ export function StrategyParamsSection({ params, result, onChange, onSave }: Stra
                 <div className="flex items-center gap-2">
                     <button
                         onClick={handleSave}
-                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium hover:text-white text-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 rounded transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-700 hover:text-white dark:bg-gray-500 dark:text-white dark:hover:bg-gray-600 rounded transition-colors"
                         title="保存并同步，不同周期保存一份参数。"
                     >
                         <Save className="w-4 h-4" />

@@ -58,7 +58,7 @@ export function ChartSection({
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                        {selectedFund?.name || '净值'}
+                        {selectedFund?.name || selectedFund?.fund_name || '净值'}
                     </h3>
                     {selectedFund && (
                         <button
