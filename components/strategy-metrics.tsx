@@ -121,8 +121,6 @@ export function StrategyMetricsSection({ result, isLoading }: StrategyMetricsPro
                             </div>
                         </div>
                     </div>
-                    <p className={`text-sm font-medium ${metrics.sharpe_ratio >= 2 ? 'text-red-600 dark:text-red-400' : metrics.sharpe_ratio >= 1 ? 'text-pink-500 dark:text-pink-400' : metrics.sharpe_ratio >= 0 ? 'text-gray-700 dark:text-gray-300' : 'text-green-600 dark:text-green-400'}`}>
-                        {metrics.sharpe_ratio.toFixed(2)}
                     <p className={`text-sm font-medium ${isLoading || !metrics ? 'text-gray-400' : metrics.sharpe_ratio >= 2 ? 'text-red-600 dark:text-red-400' : metrics.sharpe_ratio >= 1 ? 'text-pink-500 dark:text-pink-400' : metrics.sharpe_ratio >= 0 ? 'text-gray-700 dark:text-gray-300' : 'text-green-600 dark:text-green-400'}`}>
                         {isLoading || !metrics ? placeholder : metrics.sharpe_ratio.toFixed(2)}
                     </p>
