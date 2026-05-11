@@ -11,6 +11,7 @@ import { getFavorites, saveFavorites } from '@/lib/favorites';
 
 // localStorage 键名（从现有代码复制）
 const STRATEGY_PARAMS_CACHE_PREFIX = 'strategy_params_';
+const STRATEGY_CODE_CACHE_KEY = 'strategy_code_cache';
 
 /**
  * 从本地存储收集所有数据
