@@ -69,12 +69,6 @@ export default function GuestbookPage() {
     };
 
     useEffect(() => {
-        // 动态加载 Waline CSS
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://unpkg.com/@waline/client@v3/dist/waline.css';
-        document.head.appendChild(link);
-
         // 动态加载 Waline JS 并初始化
         const script = document.createElement('script');
         script.type = 'module';
@@ -90,10 +84,6 @@ export default function GuestbookPage() {
         document.body.appendChild(script);
 
         return () => {
-            // 清理 CSS
-            if (link.parentNode) {
-                link.parentNode.removeChild(link);
-            }
             // 清理 script
             if (script.parentNode) {
                 script.parentNode.removeChild(script);

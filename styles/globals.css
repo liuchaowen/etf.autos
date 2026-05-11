@@ -410,3 +410,37 @@
         background: #d1d5db;
     }
 }
+
+/* ──── Waline Comment System Theme ──── */
+/* Light mode (default) */
+:root {
+    --waline-font-size: 14px;
+    --waline-theme-color: #222222;
+    --waline-active-color: #374151;
+    --waline-color: #222222;
+    --waline-bgcolor: #ffffff;
+    --waline-bgcolor-light: #f5f5f5;
+    --waline-border-color: #dddddd;
+    --waline-disable-bgcolor: #f5f5f5;
+    --waline-disable-color: #999999;
+    --waline-code-bgcolor: #f5f5f5;
+    --waline-bq-color: #6a6a6a;
+    --waline-info-bgcolor: #f5f5f5;
+    --waline-info-color: #6a6a6a;
+}
+
+/* Dark mode */
+.dark {
+    --waline-theme-color: #ffffff;
+    --waline-active-color: #d1d5db;
+    --waline-color: #ffffff;
+    --waline-bgcolor: #1f2937;
+    --waline-bgcolor-light: #374151;
+    --waline-border-color: #374151;
+    --waline-disable-bgcolor: #374151;
+    --waline-disable-color: #6b7280;
+    --waline-code-bgcolor: #374151;
+    --waline-bq-color: #9ca3af;
+    --waline-info-bgcolor: #374151;
+    --waline-info-color: #9ca3af;
+}
