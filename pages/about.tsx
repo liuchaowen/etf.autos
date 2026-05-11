@@ -166,7 +166,7 @@ export default function AboutPage() {
                     </article>
                 </main>
                 {/* 底部免责声明 */}
-                <FooterDisclaimer path="/about" />
+                <FooterDisclaimer />
             </div>
         </>
     );

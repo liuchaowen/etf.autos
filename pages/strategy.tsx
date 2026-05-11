@@ -382,7 +382,7 @@ export default function GridStrategyPage() {
                         </div>
                     )}
                 </main>
-                <FooterDisclaimer path="/strategy" />
+                <FooterDisclaimer />
             </div>
         </>
     );
