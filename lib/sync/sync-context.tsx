@@ -106,6 +106,34 @@ export function SyncProvider({ children }: SyncProviderProps) {
         }
     }, [isLoggedIn, syncManager]);
 
+    // 仅下载 - 提前定义，供其他 useEffect 使用
+    const download = useCallback(async () => {
+        if (!isLoggedIn) {
+            setError('请先登录');
+            return;
+        }
+
+        // 清除成功状态定时器
+        if (successTimerRef.current) {
+            clearTimeout(successTimerRef.current);
+            successTimerRef.current = null;
+        }
+
+        setStatus('syncing');
+        setError(null);
+
+        try {
+            await syncManager.download();
+            const time = syncManager.getLastSyncTime();
+            setLastSyncTime(time);
+            setStatus('success');
+        } catch (err) {
+            const message = err instanceof Error ? err.message : '下载失败';
+            setError(message);
+            setStatus('error');
+        }
+    }, [isLoggedIn, syncManager]);
+
     // 执行完整同步
     const sync = useCallback(async () => {
         if (!isLoggedIn) {
@@ -216,34 +244,6 @@ export function SyncProvider({ children }: SyncProviderProps) {
             clearAllTimers();
         };
     }, [clearAllTimers]);
-
-    // 仅下载
-    const download = useCallback(async () => {
-        if (!isLoggedIn) {
-            setError('请先登录');
-            return;
-        }
-
-        // 清除成功状态定时器
-        if (successTimerRef.current) {
-            clearTimeout(successTimerRef.current);
-            successTimerRef.current = null;
-        }
-
-        setStatus('syncing');
-        setError(null);
-
-        try {
-            await syncManager.download();
-            const time = syncManager.getLastSyncTime();
-            setLastSyncTime(time);
-            setStatus('success');
-        } catch (err) {
-            const message = err instanceof Error ? err.message : '下载失败';
-            setError(message);
-            setStatus('error');
-        }
-    }, [isLoggedIn, syncManager]);
 
     // 清除错误
     const clearError = useCallback(() => {
