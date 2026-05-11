@@ -80,14 +80,6 @@ async function testCollectLocalData(): Promise<TestResult[]> {
         details: Object.keys(collectedData.strategyParams),
     });
 
-    // 验证最后选中代码
-    const codeValid = collectedData.lastSelectedCode === '588000';
-    results.push({
-        name: '最后选中代码',
-        passed: codeValid,
-        message: codeValid ? '正确' : `期望 588000，实际 ${collectedData.lastSelectedCode}`,
-    });
-
     return results;
 }
 
@@ -99,7 +91,6 @@ async function testEmptyDataDetection(): Promise<TestResult[]> {
 
     // 清空所有数据
     localStorage.removeItem('etf_favorites');
-    localStorage.removeItem('strategy_code_cache');
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -121,13 +112,6 @@ async function testEmptyDataDetection(): Promise<TestResult[]> {
         passed: isEmpty,
         message: isEmpty ? '正确识别为空数据' : '未能正确识别空数据',
         details: { favorites: emptyData.favorites.length, params: Object.keys(emptyData.strategyParams).length },
-    });
-
-    const hasDefaultCode = emptyData.lastSelectedCode === '588000';
-    results.push({
-        name: '默认代码',
-        passed: hasDefaultCode,
-        message: hasDefaultCode ? '正确' : `期望 588000，实际 ${emptyData.lastSelectedCode}`,
     });
 
     return results;
@@ -154,7 +138,6 @@ async function testMergeData(): Promise<TestResult[]> {
                 use_volatility_adjustment: true,
             },
         },
-        lastSelectedCode: '588000',
     };
 
     const remoteData1 = {
@@ -170,7 +153,6 @@ async function testMergeData(): Promise<TestResult[]> {
                 use_volatility_adjustment: false,
             },
         },
-        lastSelectedCode: '510050',
     };
 
     const merged1 = mergeData(localData1, remoteData1);
@@ -188,7 +170,6 @@ async function testMergeData(): Promise<TestResult[]> {
         updatedAt: '2024-01-02T12:00:00.000Z',
         favorites: [{ fund_code: '588000', abbr: '本地ETF', name: '本地ETF', type: '指数型', pinyin: 'bendietf' }],
         strategyParams: {},
-        lastSelectedCode: '588000',
     };
 
     const remoteData2 = {
@@ -196,7 +177,6 @@ async function testMergeData(): Promise<TestResult[]> {
         updatedAt: '2024-01-01T12:00:00.000Z',
         favorites: [{ fund_code: '510050', abbr: '远程ETF', name: '远程ETF', type: '指数型', pinyin: 'yuancheng' }],
         strategyParams: {},
-        lastSelectedCode: '510050',
     };
 
     const merged2 = mergeData(localData2, remoteData2);
@@ -219,7 +199,6 @@ async function testApplyDataToLocal(): Promise<TestResult[]> {
 
     // 清空数据
     localStorage.removeItem('etf_favorites');
-    localStorage.removeItem('strategy_code_cache');
     localStorage.removeItem('etf_autos_local_updated_at');
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -245,7 +224,6 @@ async function testApplyDataToLocal(): Promise<TestResult[]> {
                 use_volatility_adjustment: true,
             },
         },
-        lastSelectedCode: '588000',
     };
 
     applyDataToLocal(testData);
@@ -270,15 +248,6 @@ async function testApplyDataToLocal(): Promise<TestResult[]> {
         passed: paramsValid,
         message: paramsValid ? '正确应用策略参数' : '未能正确应用策略参数',
         details: params,
-    });
-
-    // 验证最后选中代码
-    const lastCode = localStorage.getItem('strategy_code_cache');
-    const codeValid = lastCode === '588000';
-    results.push({
-        name: '最后选中代码应用',
-        passed: codeValid,
-        message: codeValid ? '正确' : `期望 588000，实际 ${lastCode}`,
     });
 
     return results;
@@ -352,7 +321,6 @@ async function testCurrentLocalStorage(): Promise<TestResult[]> {
     // 收集所有相关数据
     const favoritesStr = localStorage.getItem('etf_favorites');
     const favorites = favoritesStr ? JSON.parse(favoritesStr) : null;
-    const strategyCode = localStorage.getItem('strategy_code_cache');
     const gistId = localStorage.getItem('etf_autos_gist_id');
     const lastSyncTime = localStorage.getItem('etf_autos_last_sync_time');
     const localUpdatedAt = localStorage.getItem('etf_autos_local_updated_at');
@@ -369,7 +337,6 @@ async function testCurrentLocalStorage(): Promise<TestResult[]> {
 
     const hasFavorites = favorites !== null && Array.isArray(favorites) && favorites.length > 0;
     const hasStrategyParams = Object.keys(strategyParams).length > 0;
-    const hasCode = strategyCode !== null;
     const hasGistId = gistId !== null;
     const hasSyncTime = lastSyncTime !== null;
     const hasLocalTime = localUpdatedAt !== null;
@@ -386,12 +353,6 @@ async function testCurrentLocalStorage(): Promise<TestResult[]> {
         passed: true,
         message: hasStrategyParams ? `有 ${Object.keys(strategyParams).length} 组参数` : '无策略参数',
         details: Object.keys(strategyParams),
-    });
-
-    results.push({
-        name: '最后选中代码',
-        passed: true,
-        message: hasCode ? `代码: ${strategyCode}` : '无最后选中代码',
     });
 
     results.push({
@@ -423,7 +384,6 @@ async function testFullSyncFlow(): Promise<TestResult[]> {
 
     // 设置测试数据
     localStorage.removeItem('etf_favorites');
-    localStorage.removeItem('strategy_code_cache');
     localStorage.removeItem('etf_autos_local_updated_at');
     const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -450,7 +410,6 @@ async function testFullSyncFlow(): Promise<TestResult[]> {
     };
     localStorage.setItem('strategy_params_588000_1', JSON.stringify(mockParams));
     localStorage.setItem('strategy_params_510050_2', JSON.stringify({ ...mockParams, initial_capital: 60000 }));
-    localStorage.setItem('strategy_code_cache', '588000');
     localStorage.setItem('etf_autos_local_updated_at', new Date().toISOString());
 
     const { collectLocalData } = await import('@/lib/sync/sync-manager');
@@ -461,8 +420,7 @@ async function testFullSyncFlow(): Promise<TestResult[]> {
     // 验证本地数据完整性
     const localDataValid =
         localData.favorites.length === 2 &&
-        Object.keys(localData.strategyParams).length === 2 &&
-        localData.lastSelectedCode === '588000';
+        Object.keys(localData.strategyParams).length === 2;
 
     results.push({
         name: '本地数据完整性',
@@ -471,7 +429,6 @@ async function testFullSyncFlow(): Promise<TestResult[]> {
         details: {
             favorites: localData.favorites.length,
             params: Object.keys(localData.strategyParams).length,
-            code: localData.lastSelectedCode,
         },
     });
 

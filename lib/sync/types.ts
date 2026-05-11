@@ -10,7 +10,6 @@ export interface UserData {
   updatedAt: string;
   favorites: FundItem[];
   strategyParams: Record<string, StrategyParams>;
-  lastSelectedCode: string;
 }
 
 // 同步状态
@@ -69,5 +68,4 @@ export const DEFAULT_USER_DATA: UserData = {
   updatedAt: new Date().toISOString(),
   favorites: [],
   strategyParams: {},
-  lastSelectedCode: '588000',
 };

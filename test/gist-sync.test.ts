@@ -49,16 +49,12 @@ function setupTestData() {
   localStorageMock.setItem('strategy_params_588000_1', JSON.stringify(mockParams));
   localStorageMock.setItem('strategy_params_510050_2', JSON.stringify(mockParams));
   
-  // 模拟最后选中的代码
-  localStorageMock.setItem('strategy_code_cache', '588000');
-  
   // 模拟本地更新时间
   localStorageMock.setItem('etf_autos_local_updated_at', new Date().toISOString());
   
   console.log('✅ 测试数据已设置');
   console.log('  - 收藏数据:', mockFavorites);
   console.log('  - 策略参数键:', Object.keys(localStorageMock).filter(k => k.startsWith('strategy_params_')));
-  console.log('  - 最后选中代码: 588000');
 }
 
 /**
@@ -90,14 +86,7 @@ function testCollectLocalData() {
     console.log(`  参数键: ${JSON.stringify(Object.keys(collectedData.strategyParams))}`);
   }
   
-  // 验证最后选中代码
-  const codeValid = collectedData.lastSelectedCode === '588000';
-  console.log(`最后选中代码验证: ${codeValid ? '✅ 通过' : '❌ 失败'}`);
-  if (!codeValid) {
-    console.log(`  期望: 588000, 实际: ${collectedData.lastSelectedCode}`);
-  }
-  
-  return favoritesValid && paramsValid && codeValid;
+  return favoritesValid && paramsValid;
 }
 
 /**
@@ -114,10 +103,9 @@ function testEmptyDataDetection() {
   console.log('\n空数据:');
   console.log(JSON.stringify(emptyData, null, 2));
   
-  const isEmpty = 
+  const isEmpty =
     emptyData.favorites.length === 0 &&
-    Object.keys(emptyData.strategyParams).length === 0 &&
-    emptyData.lastSelectedCode === '588000';
+    Object.keys(emptyData.strategyParams).length === 0;
   
   console.log(`\n空数据检测: ${isEmpty ? '✅ 通过' : '❌ 失败'}`);
   
@@ -146,7 +134,6 @@ function testMergeData() {
         use_volatility_adjustment: true,
       },
     },
-    lastSelectedCode: '588000',
   };
   
   const remoteData: UserData = {
@@ -164,7 +151,6 @@ function testMergeData() {
         use_volatility_adjustment: false,
       },
     },
-    lastSelectedCode: '510050',
   };
   
   console.log('\n本地数据:');
@@ -208,7 +194,6 @@ function testApplyDataToLocal() {
         use_volatility_adjustment: true,
       },
     },
-    lastSelectedCode: '588000',
   };
   
   console.log('\n应用数据:');
@@ -228,12 +213,7 @@ function testApplyDataToLocal() {
   const paramsValid = params !== null && params.initial_capital === 50000;
   console.log(`策略参数应用: ${paramsValid ? '✅ 通过' : '❌ 失败'}`);
   
-  // 验证最后选中代码是否正确应用
-  const lastCode = localStorageMock.getItem('strategy_code_cache');
-  const codeValid = lastCode === '588000';
-  console.log(`最后选中代码应用: ${codeValid ? '✅ 通过' : '❌ 失败'}`);
-  
-  return favoritesValid && paramsValid && codeValid;
+  return favoritesValid && paramsValid;
 }
 
 /**

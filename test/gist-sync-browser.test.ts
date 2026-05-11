@@ -84,16 +84,12 @@ function setupTestData() {
     initial_capital: 60000,
   }));
   
-  // 模拟最后选中的代码
-  localStorage.setItem('strategy_code_cache', '588000');
-  
   // 模拟本地更新时间
   localStorage.setItem('etf_autos_local_updated_at', new Date().toISOString());
   
   console.log('📦 测试数据已设置');
   console.log('   - 收藏数据:', mockFavorites.length, '条');
   console.log('   - 策略参数: 2 组');
-  console.log('   - 最后选中代码: 588000');
 }
 
 /**
@@ -129,14 +125,6 @@ function testCollectLocalData() {
     Object.keys(collectedData.strategyParams)
   );
   
-  // 验证最后选中代码
-  const codeValid = collectedData.lastSelectedCode === '588000';
-  addResult(
-    'collectLocalData - 最后选中代码',
-    codeValid,
-    codeValid ? '正确' : `期望 588000，实际 ${collectedData.lastSelectedCode}`
-  );
-  
   // 验证版本号
   const versionValid = collectedData.version === '1.0';
   addResult(
@@ -145,7 +133,7 @@ function testCollectLocalData() {
     versionValid ? '正确' : `期望 1.0，实际 ${collectedData.version}`
   );
   
-  return favoritesValid && paramsValid && codeValid && versionValid;
+  return favoritesValid && paramsValid && versionValid;
 }
 
 /**
@@ -173,15 +161,7 @@ function testEmptyDataDetection() {
     { favorites: emptyData.favorites.length, params: Object.keys(emptyData.strategyParams).length }
   );
   
-  // 验证默认值
-  const hasDefaultCode = emptyData.lastSelectedCode === '588000';
-  addResult(
-    '空数据默认代码',
-    hasDefaultCode,
-    hasDefaultCode ? '正确' : `期望 588000，实际 ${emptyData.lastSelectedCode}`
-  );
-  
-  return isEmpty && hasDefaultCode;
+  return isEmpty;
 }
 
 /**
@@ -206,7 +186,6 @@ function testMergeDataRemoteNewer() {
         use_volatility_adjustment: true,
       },
     },
-    lastSelectedCode: '588000',
   };
   
   const remoteData: UserData = {
@@ -224,7 +203,6 @@ function testMergeDataRemoteNewer() {
         use_volatility_adjustment: false,
       },
     },
-    lastSelectedCode: '510050',
   };
   
   const mergedData = mergeData(localData, remoteData);
@@ -266,7 +244,6 @@ function testMergeDataLocalNewer() {
         use_volatility_adjustment: true,
       },
     },
-    lastSelectedCode: '588000',
   };
   
   const remoteData: UserData = {
@@ -284,7 +261,6 @@ function testMergeDataLocalNewer() {
         use_volatility_adjustment: false,
       },
     },
-    lastSelectedCode: '510050',
   };
   
   const mergedData = mergeData(localData, remoteData);
@@ -328,7 +304,6 @@ function testApplyDataToLocal() {
         use_volatility_adjustment: true,
       },
     },
-    lastSelectedCode: '588000',
   };
   
   console.log('\n应用数据:');
@@ -358,15 +333,6 @@ function testApplyDataToLocal() {
     params
   );
   
-  // 验证最后选中代码是否正确应用
-  const lastCode = localStorage.getItem('strategy_code_cache');
-  const codeValid = lastCode === '588000';
-  addResult(
-    'applyDataToLocal - 最后选中代码',
-    codeValid,
-    codeValid ? '正确' : `期望 588000，实际 ${lastCode}`
-  );
-  
   // 验证本地更新时间是否设置
   const updatedAt = localStorage.getItem('etf_autos_local_updated_at');
   const timeValid = updatedAt === '2024-01-01T12:00:00.000Z';
@@ -376,7 +342,7 @@ function testApplyDataToLocal() {
     timeValid ? '正确' : `期望 2024-01-01T12:00:00.000Z，实际 ${updatedAt}`
   );
   
-  return favoritesValid && paramsValid && codeValid && timeValid;
+  return favoritesValid && paramsValid && timeValid;
 }
 
 /**
@@ -452,9 +418,6 @@ function testCurrentLocalStorage() {
   const favoritesStr = localStorage.getItem('etf_favorites');
   data['etf_favorites'] = favoritesStr ? JSON.parse(favoritesStr) : null;
   
-  // 策略代码
-  data['strategy_code_cache'] = localStorage.getItem('strategy_code_cache');
-  
   // 同步相关
   data['etf_autos_gist_id'] = localStorage.getItem('etf_autos_gist_id');
   data['etf_autos_last_sync_time'] = localStorage.getItem('etf_autos_last_sync_time');
@@ -477,7 +440,6 @@ function testCurrentLocalStorage() {
   // 检查是否有数据
   const hasFavorites = data['etf_favorites'] !== null && Array.isArray(data['etf_favorites']) && (data['etf_favorites'] as unknown[]).length > 0;
   const hasStrategyParams = Object.keys(strategyParams).length > 0;
-  const hasCode = data['strategy_code_cache'] !== null;
   
   addResult(
     'localStorage - 收藏数据',
@@ -489,12 +451,6 @@ function testCurrentLocalStorage() {
     'localStorage - 策略参数',
     hasStrategyParams,
     hasStrategyParams ? `有 ${Object.keys(strategyParams).length} 组参数` : '无策略参数'
-  );
-  
-  addResult(
-    'localStorage - 最后选中代码',
-    hasCode,
-    hasCode ? `代码: ${data['strategy_code_cache']}` : '无最后选中代码'
   );
   
   return true; // 这个测试总是通过，只是展示数据
@@ -540,15 +496,13 @@ function testFullSyncFlow() {
     console.log('   本地数据:', {
       favorites: localData.favorites.length,
       params: Object.keys(localData.strategyParams).length,
-      code: localData.lastSelectedCode,
     });
   }
   
   // 验证本地数据完整性
-  const localDataValid = 
+  const localDataValid =
     localData.favorites.length === 2 &&
-    Object.keys(localData.strategyParams).length === 2 &&
-    localData.lastSelectedCode === '588000';
+    Object.keys(localData.strategyParams).length === 2;
   
   addResult(
     '同步流程 - 本地数据完整',

@@ -11,7 +11,6 @@ import { getFavorites, saveFavorites } from '@/lib/favorites';
 
 // localStorage 键名（从现有代码复制）
 const STRATEGY_PARAMS_CACHE_PREFIX = 'strategy_params_';
-const STRATEGY_CODE_CACHE_KEY = 'strategy_code_cache';
 
 /**
  * 从本地存储收集所有数据
@@ -44,9 +43,6 @@ export function collectLocalData(): UserData {
     }
   }
 
-  // 最后选中的代码
-  const lastSelectedCode = localStorage.getItem(STRATEGY_CODE_CACHE_KEY) || '588000';
-
   // 本地更新时间
   const localUpdatedAt = localStorage.getItem(SYNC_STORAGE_KEYS.LOCAL_UPDATED_AT);
 
@@ -55,7 +51,6 @@ export function collectLocalData(): UserData {
     updatedAt: localUpdatedAt || new Date().toISOString(),
     favorites,
     strategyParams,
-    lastSelectedCode,
   };
 }
 
@@ -72,9 +67,6 @@ export function applyDataToLocal(data: UserData): void {
   Object.entries(data.strategyParams).forEach(([key, params]) => {
     localStorage.setItem(`${STRATEGY_PARAMS_CACHE_PREFIX}${key}`, JSON.stringify(params));
   });
-
-  // 应用最后选中的代码
-  localStorage.setItem(STRATEGY_CODE_CACHE_KEY, data.lastSelectedCode);
 
   // 更新本地更新时间
   localStorage.setItem(SYNC_STORAGE_KEYS.LOCAL_UPDATED_AT, data.updatedAt);
@@ -113,15 +105,11 @@ export function mergeData(local: UserData, remote: UserData): UserData {
     mergedParams[key] = params;
   });
 
-  // 最后选中的代码：使用本地
-  const mergedLastCode = local.lastSelectedCode;
-
   return {
     version: '1.0',
     updatedAt: new Date().toISOString(),
     favorites: mergedFavorites,
     strategyParams: mergedParams,
-    lastSelectedCode: mergedLastCode,
   };
 }
 
@@ -161,8 +149,7 @@ export class SyncManager {
   private isEmptyData(data: UserData): boolean {
     return (
       data.favorites.length === 0 &&
-      Object.keys(data.strategyParams).length === 0 &&
-      data.lastSelectedCode === '588000'
+      Object.keys(data.strategyParams).length === 0
     );
   }
 
