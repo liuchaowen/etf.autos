@@ -2,10 +2,11 @@
 
 export interface FundItem {
   fund_code: string;
-  abbr: string;
+  abbr?: string;
   name?: string;
-  type: string;
-  pinyin: string;
+  fund_name?: string;
+  type?: string;
+  pinyin?: string;
 }
 
 export interface TradeSignal {

@@ -132,20 +132,20 @@ export function FundSearch({ onSelect, placeholder = '搜索基金代码或名�
             }
 
             // 匹配缩写
-            if (fund.abbr.toLowerCase().includes(queryLower)) {
+            if (fund.abbr?.toLowerCase().includes(queryLower)) {
                 results.push(fund);
                 continue;
             }
 
             // 匹配拼音首字母
-            const initials = getInitials(fund.pinyin);
+            const initials = fund.pinyin ? getInitials(fund.pinyin) : '';
             if (initials.toLowerCase().includes(queryLower)) {
                 results.push(fund);
                 continue;
             }
 
             // 匹配完整拼音
-            if (fund.pinyin.toLowerCase().includes(queryLower)) {
+            if (fund.pinyin?.toLowerCase().includes(queryLower)) {
                 results.push(fund);
                 continue;
             }

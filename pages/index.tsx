@@ -79,7 +79,7 @@ function saveCachedFund(fund: FundItem): void {
   try {
     const data: CachedFund = {
       fund_code: fund.fund_code,
-      fund_name: fund.fund_name,
+      fund_name: fund.fund_name || fund.name || '',
       timestamp: Date.now(),
     };
     localStorage.setItem(VALUATION_CACHE_KEY, JSON.stringify(data));
