@@ -22,6 +22,7 @@ interface ChartSectionProps {
     selectedFund: FundItem | undefined;
     selectedYears: number;
     onYearsChange: (years: number) => void;
+    isLoading?: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ export function ChartSection({
     selectedFund,
     selectedYears,
     onYearsChange,
+    isLoading,
 }: ChartSectionProps) {
     const [isFav, setIsFav] = useState(false);
 
@@ -100,7 +102,11 @@ export function ChartSection({
                 </div>
             </div>
 
-            {chartData.length > 0 ? (
+            {isLoading ? (
+                <div className="h-[400px] xl:flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 text-xs">
+                    -
+                </div>
+            ) : chartData.length > 0 ? (
                 <div className="h-[400px] xl:flex-1">
                     <LineChart
                         data={chartData}

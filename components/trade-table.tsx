@@ -6,12 +6,13 @@ const PAGE_SIZE = 10;
 
 interface TradeTableProps {
     trades: TradeRecord[];
+    isLoading?: boolean;
 }
 
 /**
  * 交易记录表格组件
  */
-export function TradeTable({ trades }: TradeTableProps) {
+export function TradeTable({ trades, isLoading }: TradeTableProps) {
     const [currentPage, setCurrentPage] = useState(1);
 
     // 按日期倒序排列
@@ -41,6 +42,14 @@ export function TradeTable({ trades }: TradeTableProps) {
     const handleNextPage = () => {
         setCurrentPage(prev => Math.min(totalPages, prev + 1));
     };
+
+    if (isLoading) {
+        return (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-xs">
+                -
+            </div>
+        );
+    }
 
     if (trades.length === 0) {
         return (

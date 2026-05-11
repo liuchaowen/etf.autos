@@ -328,59 +328,42 @@ export default function GridStrategyPage() {
                         </div>
                     )}
 
-                    {loading ? (
-                        <div className="flex items-center justify-center py-32">
-                            <div className="text-center">
-                                <div className="animate-spin rounded-full h-16 w-16 border-2 border-gray-200 dark:border-gray-700 border-t-gray-500 mx-auto mb-4" />
-                                <p className="text-gray-500 dark:text-gray-400">正在计算策略...</p>
-                            </div>
-                        </div>
-                    ) : strategyResult ? (
-                        <div className="space-y-6">
-                            {/* 策略参数配置 */}
-                            <StrategyParamsSection
-                                params={strategyParams}
-                                result={strategyResult}
-                                onChange={setStrategyParams}
-                                onSave={handleSaveParams}
-                            />
+                    <div className="space-y-6">
+                        {/* 策略参数配置 */}
+                        <StrategyParamsSection
+                            params={strategyParams}
+                            result={strategyResult}
+                            onChange={setStrategyParams}
+                            onSave={handleSaveParams}
+                        />
 
-                            {/* 两栏布局：图表 + 指标 */}
-                            <div className="flex flex-col xl:flex-row gap-6">
-                                {/* 左侧：走势图 */}
-                                <div className="w-full xl:w-1/2">
-                                    <ChartSection
-                                        chartData={chartData}
-                                        buySignals={buySignals}
-                                        sellSignals={sellSignals}
-                                        selectedFund={selectedFund}
-                                        selectedYears={selectedYears}
-                                        onYearsChange={setSelectedYears}
-                                    />
-                                </div>
-
-                                {/* 右侧：策略指标 */}
-                                <div className="w-full xl:w-1/2">
-                                    <StrategyMetricsSection result={strategyResult} />
-                                </div>
+                        {/* 两栏布局：图表 + 指标 */}
+                        <div className="flex flex-col xl:flex-row gap-6">
+                            {/* 左侧：走势图 */}
+                            <div className="w-full xl:w-1/2">
+                                <ChartSection
+                                    chartData={chartData}
+                                    buySignals={buySignals}
+                                    sellSignals={sellSignals}
+                                    selectedFund={selectedFund}
+                                    selectedYears={selectedYears}
+                                    onYearsChange={setSelectedYears}
+                                    isLoading={loading}
+                                />
                             </div>
 
-                            {/* 交易记录列表 */}
-                            <section className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors">
-                                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-4">交易记录</h3>
-                                <TradeTable trades={strategyResult.trades} />
-                            </section>
-
-
-                        </div>
-                    ) : (
-                        <div className="text-center py-32">
-                            <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
-                                <BarChart3 className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                            {/* 右侧：策略指标 */}
+                            <div className="w-full xl:w-1/2">
+                                <StrategyMetricsSection result={strategyResult} isLoading={loading} />
                             </div>
-                            <p className="text-gray-500 dark:text-gray-400">请选择ETF开始策略回测</p>
                         </div>
-                    )}
+
+                        {/* 交易记录列表 */}
+                        <section className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors">
+                            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-4">交易记录</h3>
+                            <TradeTable trades={strategyResult?.trades || []} isLoading={loading} />
+                        </section>
+                    </div>
                 </main>
                 <FooterDisclaimer />
             </div>
