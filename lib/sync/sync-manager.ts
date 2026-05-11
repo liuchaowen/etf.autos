@@ -236,6 +236,9 @@ export class SyncManager {
     const remoteData = await this.gistService.readData();
     applyDataToLocal(remoteData);
 
+    // 更新同步时间
+    localStorage.setItem(SYNC_STORAGE_KEYS.LAST_SYNC_TIME, new Date().toISOString());
+
     return remoteData;
   }
 

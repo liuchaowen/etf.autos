@@ -134,16 +134,17 @@ export function SyncProvider({ children }: SyncProviderProps) {
         }
     }, [isLoggedIn, syncManager]);
 
-    // 登录时自动同步一次
+    // 登录时自动从云端下载数据到本地
+    // 注意：只下载不上传，避免多设备登录时数据覆盖问题
     useEffect(() => {
         if (isLoggedIn && token) {
             // 延迟执行，避免阻塞页面加载
             const timer = setTimeout(() => {
-                sync().catch(console.error);
+                download().catch(console.error);
             }, 1000);
             return () => clearTimeout(timer);
         }
-    }, [isLoggedIn, token, sync]);
+    }, [isLoggedIn, token, download]);
 
     // 成功状态自动恢复到 idle
     useEffect(() => {
