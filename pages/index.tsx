@@ -17,7 +17,7 @@ import { FundItem, HistoryItem, ChartDataItem } from '@/types';
  */
 
 // localStorage 缓存键名
-const VALUATION_CODE_CACHE_KEY = 'valuation_code_cache';
+const VALUATION_CACHE_KEY = 'valuation_cache';
 
 // 时间范围选项
 const TIME_RANGE_OPTIONS = [
@@ -34,22 +34,58 @@ interface ValuationData {
   historyData: HistoryItem[];
 }
 
-// 从 localStorage 读取缓存的ETF代码
-function loadCachedCode(): string {
-  if (typeof window === 'undefined') return ETF_LIST[0].fund_code;
+// 缓存数据结构
+interface CachedFund {
+  fund_code: string;
+  fund_name: string;
+  timestamp: number;
+}
+
+// 从 localStorage 读取缓存的基金信息
+function loadCachedFund(): { code: string; fund: FundItem | null } {
+  if (typeof window === 'undefined') return { code: ETF_LIST[0].fund_code, fund: null };
 
   try {
-    const cached = localStorage.getItem(VALUATION_CODE_CACHE_KEY);
+    const cached = localStorage.getItem(VALUATION_CACHE_KEY);
     if (cached) {
+      const data = JSON.parse(cached) as CachedFund;
       // 验证缓存数据是否有效
-      if (ETF_LIST.some(item => item.fund_code === cached)) {
-        return cached;
+      if (data && data.fund_code && data.fund_name) {
+        // 检查是否在预设列表中
+        const inList = ETF_LIST.some(item => item.fund_code === data.fund_code);
+        if (inList) {
+          return { code: data.fund_code, fund: null };
+        }
+        // 不在预设列表中，返回完整基金信息
+        return {
+          code: data.fund_code,
+          fund: {
+            fund_code: data.fund_code,
+            fund_name: data.fund_name,
+          }
+        };
       }
     }
   } catch {
     // 读取失败，使用默认值
   }
-  return ETF_LIST[0].fund_code;
+  return { code: ETF_LIST[0].fund_code, fund: null };
+}
+
+// 保存基金信息到缓存
+function saveCachedFund(fund: FundItem): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const data: CachedFund = {
+      fund_code: fund.fund_code,
+      fund_name: fund.fund_name,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem(VALUATION_CACHE_KEY, JSON.stringify(data));
+  } catch {
+    // 保存失败时忽略
+  }
 }
 
 export default function ValuationPage() {
@@ -74,10 +110,18 @@ export default function ValuationPage() {
       const urlCode = router.query.code as string;
       if (urlCode && ETF_LIST.some(item => item.fund_code === urlCode)) {
         setSelectedCode(urlCode);
+        // 保存到缓存
+        const fund = ETF_LIST.find(item => item.fund_code === urlCode);
+        if (fund) {
+          saveCachedFund(fund);
+        }
       } else {
         // 否则从缓存读取
-        const cachedCode = loadCachedCode();
-        setSelectedCode(cachedCode);
+        const cached = loadCachedFund();
+        setSelectedCode(cached.code);
+        if (cached.fund) {
+          setSelectedFundFromSearch(cached.fund);
+        }
       }
       setInitialized(true);
     }
@@ -89,11 +133,7 @@ export default function ValuationPage() {
     // 保存从搜索选择的基金信息（可能不在 ETF_LIST 中）
     setSelectedFundFromSearch(fund);
     // 保存到 localStorage
-    try {
-      localStorage.setItem(VALUATION_CODE_CACHE_KEY, fund.fund_code);
-    } catch {
-      // 保存失败时忽略
-    }
+    saveCachedFund(fund);
   }, []);
 
   // 加载估值数据

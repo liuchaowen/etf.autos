@@ -15,7 +15,7 @@ import { getSyncManager } from '@/lib/sync/sync-manager';
 
 // localStorage 缓存键名前缀
 const STRATEGY_PARAMS_CACHE_PREFIX = 'strategy_params_';
-const STRATEGY_CODE_CACHE_KEY = 'strategy_code_cache';
+const STRATEGY_CACHE_KEY = 'strategy_cache';
 
 // 自定义事件名称（用于通知同步上下文数据变化）
 export const STRATEGY_PARAMS_CHANGE_EVENT = 'strategy_params_change';
@@ -100,22 +100,63 @@ function saveCachedParams(fundCode: string, years: number, params: StrategyParam
     }
 }
 
-// 从 localStorage 读取缓存的ETF代码
-function loadCachedCode(): string {
-    if (typeof window === 'undefined') return '588000';
+// 缓存数据结构
+interface CachedFund {
+    fund_code: string;
+    fund_name: string;
+    timestamp: number;
+}
+
+// 从 localStorage 读取缓存的基金信息
+function loadCachedFund(): { code: string; fund: FundItem | null } {
+    if (typeof window === 'undefined') return { code: '588000', fund: null };
 
     try {
-        const cached = localStorage.getItem(STRATEGY_CODE_CACHE_KEY);
+        const cached = localStorage.getItem(STRATEGY_CACHE_KEY);
         if (cached) {
+            const data = JSON.parse(cached) as CachedFund;
             // 验证缓存数据是否有效
-            if (ETF_LIST.some(item => item.fund_code === cached)) {
-                return cached;
+            if (data && data.fund_code && data.fund_name) {
+                // 检查是否在预设列表中
+                const inList = ETF_LIST.some(item => item.fund_code === data.fund_code);
+                if (inList) {
+                    return { code: data.fund_code, fund: null };
+                }
+                // 不在预设列表中，返回完整基金信息
+                return {
+                    code: data.fund_code,
+                    fund: {
+                        fund_code: data.fund_code,
+                        fund_name: data.fund_name,
+                    }
+                };
             }
         }
     } catch {
         // 读取失败，使用默认值
     }
-    return '588000';
+    return { code: '588000', fund: null };
+}
+
+// 保存基金信息到缓存
+function saveCachedFund(fund: FundItem): void {
+    if (typeof window === 'undefined') return;
+
+    try {
+        const data: CachedFund = {
+            fund_code: fund.fund_code,
+            fund_name: fund.fund_name,
+            timestamp: Date.now(),
+        };
+        localStorage.setItem(STRATEGY_CACHE_KEY, JSON.stringify(data));
+        // 标记本地数据已修改（用于同步）
+        const syncManager = getSyncManager();
+        syncManager.markLocalModified();
+        // 触发自定义事件通知同步上下文
+        dispatchStrategyCodeChange(fund.fund_code);
+    } catch {
+        // 保存失败时忽略
+    }
 }
 
 export default function GridStrategyPage() {
@@ -143,14 +184,22 @@ export default function GridStrategyPage() {
                 const fund = ETF_LIST.find(item => item.fund_code === urlCode);
                 if (fund) {
                     setSelectedFund(fund);
+                    // 保存到缓存
+                    saveCachedFund(fund);
                 }
             } else {
                 // 否则从缓存读取
-                const cachedCode = loadCachedCode();
-                setSelectedCode(cachedCode);
-                const fund = ETF_LIST.find(item => item.fund_code === cachedCode);
-                if (fund) {
-                    setSelectedFund(fund);
+                const cached = loadCachedFund();
+                setSelectedCode(cached.code);
+                if (cached.fund) {
+                    // 缓存的基金不在预设列表中
+                    setSelectedFund(cached.fund);
+                } else {
+                    // 缓存的基金在预设列表中
+                    const fund = ETF_LIST.find(item => item.fund_code === cached.code);
+                    if (fund) {
+                        setSelectedFund(fund);
+                    }
                 }
             }
             setInitialized(true);
@@ -171,16 +220,7 @@ export default function GridStrategyPage() {
         setSelectedCode(fund.fund_code);
         setSelectedFund(fund);
         // 保存到 localStorage
-        try {
-            localStorage.setItem(STRATEGY_CODE_CACHE_KEY, fund.fund_code);
-            // 标记本地数据已修改
-            const syncManager = getSyncManager();
-            syncManager.markLocalModified();
-            // 触发自定义事件通知同步上下文
-            dispatchStrategyCodeChange(fund.fund_code);
-        } catch {
-            // 保存失败时忽略
-        }
+        saveCachedFund(fund);
     }, []);
 
     // 加载策略数据（异步获取）
